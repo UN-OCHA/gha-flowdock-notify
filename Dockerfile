@@ -2,23 +2,23 @@ FROM golang:1.11-alpine3.9@sha256:7a0bf914dd581a35afb054bc02c6b7a3fa31ed6398adf9
 
 LABEL "com.github.actions.icon"="bell"
 LABEL "com.github.actions.color"="yellow"
-LABEL "com.github.actions.name"="Slack Notify"
-LABEL "com.github.actions.description"="This action will send notification to Slack"
+LABEL "com.github.actions.name"="Flowdockk Notify"
+LABEL "com.github.actions.description"="This action will send notification to Flowdockk"
 
 
-WORKDIR ${GOPATH}/src/github.com/rtcamp/action-slack-notify
-COPY main.go ${GOPATH}/src/github.com/rtcamp/action-slack-notify
+WORKDIR ${GOPATH}/src/github.com/UN-OCHA/gha-flowdock-notify
+COPY main.go ${GOPATH}/src/github.com/UN-OCHA/gha-flowdock-notify
 
 ENV CGO_ENABLED 0
 ENV GOOS linux
 
 RUN go get -v ./...
-RUN go build -a -installsuffix cgo -ldflags '-w  -extldflags "-static"' -o /go/bin/slack-notify .
+RUN go build -a -installsuffix cgo -ldflags '-w  -extldflags "-static"' -o /go/bin/flowdock-notify .
 
 # alpine:latest at 2019-01-04T21:27:39IST
 FROM alpine@sha256:46e71df1e5191ab8b8034c5189e325258ec44ea739bba1e5645cff83c9048ff1
 
-COPY --from=builder /go/bin/slack-notify /usr/bin/slack-notify
+COPY --from=builder /go/bin/flowdock-notify /usr/bin/flowdock-notify
 
 ENV VAULT_VERSION 1.0.2
 

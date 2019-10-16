@@ -1,21 +1,12 @@
 #!/usr/bin/env bash
 
 export GITHUB_BRANCH=${GITHUB_REF##*heads/}
-export SLACK_ICON=${SLACK_ICON:-"https://avatars0.githubusercontent.com/u/43742164"}
-export SLACK_USERNAME=${SLACK_USERNAME:-"rtBot"}
+export FLOWDOCK_USERNAME=${FLOWDOCK_USERNAME:-"fdBot"}
 export CI_SCRIPT_OPTIONS="ci_script_options"
-export SLACK_TITLE=${SLACK_TITLE:-"Message"}
+export FLOWDOCK_MESSAGE=${FLOWDOCK_MESSAGE:-"Message"}
 export COMMIT_MESSAGE=$(cat "/github/workflow/event.json" | jq .commits | jq '.[0].message' -r)
 
 hosts_file="$GITHUB_WORKSPACE/.github/hosts.yml"
-
-if [[ -z "$SLACK_CHANNEL" ]]; then
-	user_slack_channel=$(cat "$hosts_file" | shyaml get-value "$CI_SCRIPT_OPTIONS.slack-channel" | tr '[:upper:]' '[:lower:]')
-fi
-
-if [[ -n "$user_slack_channel" ]]; then
-	export SLACK_CHANNEL="$user_slack_channel"
-fi
 
 # Login to vault using GH Token
 if [[ -n "$VAULT_GITHUB_TOKEN" ]]; then
@@ -24,7 +15,7 @@ if [[ -n "$VAULT_GITHUB_TOKEN" ]]; then
 fi
 
 if [[ -n "$VAULT_GITHUB_TOKEN" ]] || [[ -n "$VAULT_TOKEN" ]]; then
-	export SLACK_WEBHOOK=$(vault read -field=webhook secret/slack)
+	export FLOWDOCK_TOKEN=$(vault read -field=token secret/flowdock)
 fi
 
 if [[ -f "$hosts_file" ]]; then
@@ -51,8 +42,8 @@ if [[ -n "$SITE_NAME" ]]; then
 fi
 
 
-if [[ -z "$SLACK_MESSAGE" ]]; then
-	export SLACK_MESSAGE="$COMMIT_MESSAGE"
+if [[ -z "$FLOWDOCK_MESSAGE" ]]; then
+	export FLOWDOCK_MESSAGE="$COMMIT_MESSAGE"
 fi
 
-slack-notify "$@"
+flowdock-notify "$@"

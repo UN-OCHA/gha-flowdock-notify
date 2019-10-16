@@ -6,116 +6,48 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+  "strings"
 )
 
 const (
-	EnvSlackWebhook  = "SLACK_WEBHOOK"
-	EnvSlackIcon     = "SLACK_ICON"
-	EnvSlackChannel  = "SLACK_CHANNEL"
-	EnvSlackTitle    = "SLACK_TITLE"
-	EnvSlackMessage  = "SLACK_MESSAGE"
-	EnvSlackColor    = "SLACK_COLOR"
-	EnvSlackUserName = "SLACK_USERNAME"
-	EnvGithubActor   = "GITHUB_ACTOR"
-	EnvSiteName      = "SITE_NAME"
-	EnvHostName      = "HOST_NAME"
-	EnvDepolyPath    = "DEPLOY_PATH"
+	EnvFlowdockToken    = "FLOWDOCK_TOKEN"
+	EnvFlowdockMessage  = "FLOWDOCK_MESSAGE"
+	EnvFlowdockThread   = "FLOWDOCK_THREAD"
+	EnvFlowdockUserName = "FLOWDOCK_USERNAME"
+	EnvFlowdockTags     = "FLOWDOCK_TAGS"
+	EnvGithubActor      = "GITHUB_ACTOR"
 )
 
 type Webhook struct {
-	Text        string       `json:"text,omitempty"`
-	UserName    string       `json:"username,omitempty"`
-	IconURL     string       `json:"icon_url,omitempty"`
-	IconEmoji   string       `json:"icon_emoji,omitempty"`
-	Channel     string       `json:"channel,omitempty"`
-	UnfurlLinks bool         `json:"unfurl_links"`
-	Attachments []Attachment `json:"attachments,omitmepty"`
-}
-
-type Attachment struct {
-	Fallback   string  `json:"fallback"`
-	Pretext    string  `json:"pretext,omitempty"`
-	Color      string  `json:"color,omitempty"`
-	AuthorName string  `json:"author_name,omitempty"`
-	AuthorLink string  `json:"author_link,omitempty"`
-	AuthorIcon string  `json:"author_icon,omitempty"`
-	Footer     string  `json:"footer,omitempty"`
-	Fields     []Field `json:"fields,omitempty"`
-	
-}
-
-type Field struct {
-	Title string `json:"title,omitempty"`
-	Value string `json:"value,omitempty"`
-	Short bool   `json:"short,omitempty"`
+	Event     string       `json:"event"`
+	UserName  string       `json:"external_user_name,omitempty"`
+	Content   string       `json:"content,omitempty"`
+	Thread    string       `json:"thread_id,omitempty"`
+	Tags      []string     `json:"tags,omitempty"`
 }
 
 func main() {
-	endpoint := os.Getenv(EnvSlackWebhook)
-	if endpoint == "" {
-		fmt.Fprintln(os.Stderr, "URL is required")
+	token := os.Getenv(EnvFlowdockToken)
+	if token == "" {
+		fmt.Fprintln(os.Stderr, "Token is required")
 		os.Exit(1)
 	}
-	text := os.Getenv(EnvSlackMessage)
+
+  endpoint := "https://api.flowdock.com/messages/chat/"
+  endpoint += token
+
+	text := os.Getenv(EnvFlowdockMessage)
 	if text == "" {
 		fmt.Fprintln(os.Stderr, "Message is required")
 		os.Exit(1)
 	}
 
-	fields:= []Field{
-		{
-			Title: "Ref",
-			Value: os.Getenv("GITHUB_REF"),
-			Short: true,
-		},                {
-			Title: "Event",
-			Value: os.Getenv("GITHUB_EVENT_NAME"),
-			Short: true,
-		},
-		{
-			Title: "Repo Action URL",
-			Value: "https://github.com/" + os.Getenv("GITHUB_REPOSITORY") + "/actions",
-			Short: false,
-		},
-		{
-			Title: os.Getenv(EnvSlackTitle),
-			Value: envOr(EnvSlackMessage, "EOM"),
-			Short: false,
-		},
-	}
-
-	hostName := os.Getenv(EnvHostName)
-	if hostName != "" {
-		newfields:= []Field{
-			{
-				Title: os.Getenv("SITE_TITLE"),
-				Value: os.Getenv(EnvSiteName),
-				Short: true,
-			},
-			{
-				Title: os.Getenv("HOST_TITLE"),
-				Value: os.Getenv(EnvHostName),
-				Short: true,
-			},
-		}
-		fields = append(newfields, fields...)
-	}
-
 	msg := Webhook{
-		UserName: os.Getenv(EnvSlackUserName),
-		IconURL:  os.Getenv(EnvSlackIcon),
-		Channel:  os.Getenv(EnvSlackChannel),
-		Attachments: []Attachment{
-			{
-				Fallback: envOr(EnvSlackMessage, "GITHUB_ACTION=" + os.Getenv("GITHUB_ACTION") + " \n GITHUB_ACTOR=" + os.Getenv("GITHUB_ACTOR") + " \n GITHUB_EVENT_NAME=" + os.Getenv("GITHUB_EVENT_NAME") + " \n GITHUB_REF=" + os.Getenv("GITHUB_REF") + " \n GITHUB_REPOSITORY=" + os.Getenv("GITHUB_REPOSITORY") + " \n GITHUB_WORKFLOW=" + os.Getenv("GITHUB_WORKFLOW")),
-				Color:      envOr(EnvSlackColor, "good"),
-				AuthorName: envOr(EnvGithubActor, ""),
-				AuthorLink: "http://github.com/" + os.Getenv(EnvGithubActor),
-				AuthorIcon: "http://github.com/" + os.Getenv(EnvGithubActor) + ".png?size=32",
-				Footer: "<https://github.com/rtCamp/github-actions-library|Powered By rtCamp's GitHub Actions Library>",
-				Fields: fields,
-			},
-		},
+    Event:    "message",
+		UserName: os.Getenv(EnvFlowdockUserName),
+		Thread:   os.Getenv(EnvFlowdockThread),
+    Content:  text,
+    Tags:     strings.Split(os.Getenv(EnvFlowdockTags), ","),
 	}
 
 	if err := send(endpoint, msg); err != nil {
