@@ -18,5 +18,6 @@ args:
   - ${{ inputs.args }}
 env:
   COMPOSER: ${{ inputs.file }}
-runs: |
-  composer install
+runs:
+  using: 'ubuntu-latest'
+  main: 'composer install"
