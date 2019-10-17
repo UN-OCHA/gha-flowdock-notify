@@ -23,7 +23,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Flowdock Notification
-      uses: UN-OCHA/gha-flowdock-notify@master
+      uses: UN-OCHA/actions/flowdock-notify@master
       env:
         FLOWDOCK_TOKEN: ${{ secrets.FLOWDOCK_TOKEN }}
 ```
@@ -38,6 +38,7 @@ By default, action is designed to run with minimal configuration but you can alt
 Variable          | Default                                               | Purpose
 ------------------|-------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------
 FLOWDOCK_USERNAME | `fdBot`                                               | The name of the sender of the message. Does not need to be a "real" username
+FLOWDOCK_ICON     | Empty                                                 | The emoji name to prepend to the message. Exclude the surrounding colons
 FLOWDOCK_THREAD   | Empty                                                 | The thread ID you wnt to post the message to
 FLOWDOCK_MESSAGE  | Generated from git commit message.                    | The main Flowdock message.
 FLOWDOCK_TAGS     | Empty                                                 | Hash tags to tag the message
@@ -46,18 +47,21 @@ You can see the action block with all variables as below:
 
 ```yml
     - name: Flowdock Notification
-      uses: UN-OCHA/gha-flowdock-notify@master
+      uses: UN-OCHA/actions/flowdock-notify@master
       env:
         FLOWDOCK_USERNAME: 'Jebb'
+        FLOWDOCK_ICON: 'rocket'
         FLOWDOCK_THREAD: 'Owc8UJJ5773F-PIdEwK8LtT5QM7'
-        FLOWDOCK_MESSAGE: 'Post Content :rocket:'
+        FLOWDOCK_MESSAGE: 'Hi there, humans'
         FLOWDOCK_TAGS: 'lol,spam'
         FLOWDOCK_TOKEN: ${{ secrets.FLOWDOCK_TOKEN }}
 ```
 
+All Flowdock markup is supported in messages.
+
 ## Hashicorp Vault (Optional)
 
-This GitHub action supports [Hashicorp Vault](https://www.vaultproject.io/). 
+This GitHub action supports [Hashicorp Vault](https://www.vaultproject.io/).
 
 To enable Hashicorp Vault support, please define following GitHub secrets:
 
@@ -78,7 +82,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Flowdock Notification
-      uses: UN-OCHA/gha-flowdock-notify@master
+      uses: UN-OCHA/actions/flowdock-notify@master
       env:
         VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
         VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}

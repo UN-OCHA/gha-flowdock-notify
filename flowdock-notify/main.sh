@@ -3,7 +3,7 @@
 export GITHUB_BRANCH=${GITHUB_REF##*heads/}
 export FLOWDOCK_USERNAME=${FLOWDOCK_USERNAME:-"fdBot"}
 export CI_SCRIPT_OPTIONS="ci_script_options"
-export FLOWDOCK_MESSAGE=${FLOWDOCK_MESSAGE:-"Message"}
+export FLOWDOCK_MESSAGE=${FLOWDOCK_MESSAGE:-""}
 export COMMIT_MESSAGE=$(cat "/github/workflow/event.json" | jq .commits | jq '.[0].message' -r)
 
 hosts_file="$GITHUB_WORKSPACE/.github/hosts.yml"

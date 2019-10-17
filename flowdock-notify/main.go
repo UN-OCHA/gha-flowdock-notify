@@ -14,6 +14,7 @@ const (
 	EnvFlowdockMessage  = "FLOWDOCK_MESSAGE"
 	EnvFlowdockThread   = "FLOWDOCK_THREAD"
 	EnvFlowdockUserName = "FLOWDOCK_USERNAME"
+	EnvFlowdockIcon     = "FLOWDOCK_ICON"
 	EnvFlowdockTags     = "FLOWDOCK_TAGS"
 	EnvGithubActor      = "GITHUB_ACTOR"
 )
@@ -42,11 +43,14 @@ func main() {
 		os.Exit(1)
 	}
 
+  message := os.Getenv(EnvFlowdockIcon)
+  message += text
+
 	msg := Webhook{
     Event:    "message",
 		UserName: os.Getenv(EnvFlowdockUserName),
 		Thread:   os.Getenv(EnvFlowdockThread),
-    Content:  text,
+    Content:  message,
     Tags:     strings.Split(os.Getenv(EnvFlowdockTags), ","),
 	}
 

@@ -2,12 +2,12 @@ FROM golang:1.11-alpine3.9@sha256:7a0bf914dd581a35afb054bc02c6b7a3fa31ed6398adf9
 
 LABEL "com.github.actions.icon"="bell"
 LABEL "com.github.actions.color"="yellow"
-LABEL "com.github.actions.name"="Flowdockk Notify"
-LABEL "com.github.actions.description"="This action will send notification to Flowdockk"
+LABEL "com.github.actions.name"="Flowdock Notify"
+LABEL "com.github.actions.description"="This action will send a notification to Flowdockk"
 
 
-WORKDIR ${GOPATH}/src/github.com/UN-OCHA/gha-flowdock-notify
-COPY main.go ${GOPATH}/src/github.com/UN-OCHA/gha-flowdock-notify
+WORKDIR ${GOPATH}/src/github.com/UN-OCHA/actions/flowdock-notify
+COPY main.go ${GOPATH}/src/github.com/UN-OCHA/actions/flowdock-notify
 
 ENV CGO_ENABLED 0
 ENV GOOS linux
