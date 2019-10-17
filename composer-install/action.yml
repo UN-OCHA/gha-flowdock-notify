@@ -13,11 +13,7 @@ inputs:
     default: ''
 branding:
   color: 'blue'
-  icon: 'rocket'
-args:
-  - ${{ inputs.args }}
-env:
-  COMPOSER: ${{ inputs.file }}
+  icon: 'hexagon'
 runs:
   using: 'ubuntu-latest'
-  main: 'composer install"
+  main: 'COMPOSER=${INPUT_FILE} composer install ${INPUT_ARGS}'
