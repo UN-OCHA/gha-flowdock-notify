@@ -1,0 +1,22 @@
+# Install packages with composer.
+name: 'Composer Install'
+description: 'Install packages with composer.'
+author: 'UN-OCHA OPS <ops@humanitarianresponse.info>'
+inputs:
+  file:
+    description: 'Name of the composer file that should be processed. Defaults to composer.json.'
+    required: false
+    default: 'composer.json'
+  args:
+    description: 'Any arguments for the composer install command.'
+    required: false
+    default: ''
+branding:
+  color: 'blue'
+  icon: 'rocket'
+args:
+  - ${{ inputs.args }}
+env:
+  COMPOSER: ${{ inputs.file }}
+runs: |
+  composer install
