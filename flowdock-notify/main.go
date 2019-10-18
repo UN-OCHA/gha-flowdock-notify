@@ -43,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-  message := os.Getenv(EnvFlowdockIcon)
+  message := ":" + os.Getenv(EnvFlowdockIcon) + ":"
   message += text
 
 	msg := Webhook{
