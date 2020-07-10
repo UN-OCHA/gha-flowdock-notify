@@ -1,5 +1,5 @@
 name: 'Determine Environment Action'
-description: 'Runs `determine-enve`. Exports a variable for you to use in subsequent actions.'
+description: 'Runs `determine-env`. Exports a variable for you to use in subsequent actions.'
 author: 'cafuego'
 branding:
   icon: 'arrow-up-right'
@@ -11,5 +11,5 @@ outputs:
   branch_environment:
     description: "Either `'production'` when the current checkout is the production branch or a tag, or the branch name if not."
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  uses: 'docker://unocha/actions:determine-environment-v3'
+'

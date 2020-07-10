@@ -1,0 +1,8 @@
+name: 'Flowdock Notification Action'
+description: 'Runs `flowdock-notify`.'
+author: 'cafuego'
+branding:
+  icon: 'arrow-up-right'
+  color: 'orange'
+runs:
+  uses: 'docker://unocha/actions:flowdock-notify-v3'
