@@ -1,6 +1,6 @@
 {
   "name": "determine-env-action",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "GitHub action runs `determine-env`. Exports a variable for you to use in subsequent actions.",
   "homepage": "https://github.com/UN-OCHA/actions-determine-env",
   "author": {

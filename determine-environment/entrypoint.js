@@ -8,7 +8,7 @@ const path = require('path');
  * on to distinguish between production and non-production.
  */
 async function run() {
-  const branch_production = core.getInput('branch_production', { required: false }) || 'master';
+  const branch_production = core.getInput('branch_production', { required: false }) || 'main';
 
   // What did we just checkout?
   let ref = process.env['GITHUB_REF'];
