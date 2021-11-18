@@ -5,30 +5,44 @@ inputs:
   aws_access_key_id:
     description: "An Amazon IAM access key"
     required: true
+    type: string
   aws_secret_access_key:
     description: "An Amazon IAM access secret"
     required: true
-  docker_registry:
+    type: string
+  docker_registry_url:
     description: "The docker registry URL"
     required: true
+    type: string
+  docker_registry_path:
+    description: "The docker registry path (organisation) component"
+    required: false
+    default: '/'
+    type: string
   docker_username:
     description: "The docker registry username"
     required: false
+    type: string
   docker_password:
     description: "The docker registry password"
     required: false
+    type: string
   docker_image:
     description: "The docker image name"
     required: true
+    type: string
   ecr_github_token:
     description: "An authentication token for Amazon ECR to access GitHub"
     required: false
+    type: string
   ecr_jenkins_token:
     description: "An authentication token for GitHub to access Jenkins"
     required: false
+    type: string
   flowdock_token:
     description: "The flowdock token"
     required: false
+    type: string
 
 runs:
   using: "composite"
@@ -59,10 +73,10 @@ runs:
 
   - name: Login to Private ECR
     id: login-private
-    if: endsWith(inputs.docker_registry, '.amazonaws.com') && inputs.docker_username
+    if: endsWith(inputs.docker_registry_url, '.amazonaws.com') && inputs.docker_username
     uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
     with:
-      registry: 532768535361.dkr.ecr.us-east-1.amazonaws.com
+      registry: ${{ inputs.docker_registry_url }}
       username: ${{ inputs.docker_username }}
       password: ${{ inputs.docker_password }}
     env:
@@ -102,7 +116,7 @@ runs:
         info.humanitarianresponse.build.vcs-ref=${{ steps.meta.outputs.VCS_REF }}
       file: docker/Dockerfile
       push: true
-      tags: ${{ inputs.docker_registry }}/${{ inputs.docker_image }}:${{ steps.meta.outputs.DOCKER_TAG }}
+      tags: ${{ inputs.docker_registry_url }}${{ inputs.docker_registry_path }}${{ inputs.docker_image }}:${{ steps.meta.outputs.DOCKER_TAG }}
       secrets: |
           "github_token=${{ inputs.ecr_github_token }}"
 
