@@ -2,23 +2,44 @@ name: "Drupal Docker Build Workflow"
 description: "Does docker authentication, build, push and notification."
 
 inputs:
-  registry:
+  aws_access_key_id:
+    description: "An Amazon IAM access key"
+    required: true
+  aws_secret_access_key:
+    description: "An Amazon IAM access secret"
+    required: true
+  docker_registry:
     description: "The docker registry URL"
     required: true
-  image:
+  docker_username:
+    description: "The docker registry username"
+    required: false
+  docker_password:
+    description: "The docker registry password"
+    required: false
+  docker_image:
     description: "The docker image name"
     required: true
+  ecr_github_token:
+    description: "An authentication token for Amazon ECR to access GitHub"
+    required: false
+  ecr_jenkins_token:
+    description: "An authentication token for GitHub to access Jenkins"
+    required: false
+  flowdock_token:
+    description: "The flowdock token"
+    required: false
 
 runs:
   using: "composite"
   steps:
   - name: Configure AWS Credentials
     id: aws
-    if: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+    if: ${{ inputs.ECR_AWS_ACCESS_KEY_ID }}
     uses: aws-actions/configure-aws-credentials@v1
     with:
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      aws-access-key-id: ${{ inputs.aws_access_key_id }}
+      aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
       aws-region: us-east-1
 
   - name: Determine environment type
@@ -26,34 +47,26 @@ runs:
     uses: docker://ghcr.io/un-ocha/actions:determine-environment-main
 
   - name: Login to Public ECR
-    id: login-aws-public
-    if: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+    id: login-public
+    if: inputs.docker_username
     uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
     with:
       registry: public.ecr.aws
-      username: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-      password: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      username: ${{ inputs.docker_username }}
+      password: ${{ inputs.docker_password }}
     env:
       AWS_REGION: us-east-1
 
   - name: Login to Private ECR
-    id: login-aws-private
-    if: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+    id: login-private
+    if: endsWith(inputs.docker_registry, '.amazonaws.com') && inputs.docker_username
     uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
     with:
       registry: 532768535361.dkr.ecr.us-east-1.amazonaws.com
-      username: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-      password: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      username: ${{ inputs.docker_username }}
+      password: ${{ inputs.docker_password }}
     env:
       AWS_REGION: us-east-1
-
-  - name: Login to DockerHub
-    id: login-dockerhub
-    if: ${{ secrets.DOCKER_USERNAME }}
-    uses: docker/login-action@v1
-    with:
-      username: ${{ secrets.DOCKER_USERNAME }}
-      password: ${{ secrets.DOCKER_PASSWORD }}
 
   - name: Image Metadata
     id: meta
@@ -88,17 +101,17 @@ runs:
         info.humanitarianresponse.build.vcs-ref=${{ steps.meta.outputs.VCS_REF }}
       file: docker/Dockerfile
       push: true
-      tags: ${{ inputs.registry }}/${{ inputs.image }}:${{ steps.meta.outputs.DOCKER_TAG }}
+      tags: ${{ inputs.docker_registry }}/${{ inputs.docker_image }}:${{ steps.meta.outputs.DOCKER_TAG }}
       secrets: |
-          "github_token=${{ secrets.ECR_GITHUB_TOKEN }}"
+          "github_token=${{ inputs.ecr_github_token }}"
 
   - name: Webhook
-    id: jenkins
-    if: success() && secrets.JENKINS_ECR_TOKEN
+    id: webhook
+    if: success() && inputs.ecr_jenkins_token
     env:
       DOCKER_IMAGE: ${{ inputs.image }}
       DOCKER_TAG: ${{ steps.meta.outputs.DOCKER_TAG }}
-      JENKINS_TOKEN: ${{ secrets.JENKINS_ECR_TOKEN }}
+      JENKINS_TOKEN: ${{ inputs.ecr_jenkins_token }}
     run: |
       curl -H "Token: ${JENKINS_TOKEN}" -X POST "https://jenkins.aws.ahconu.org/generic-webhook-trigger/invoke?DOCKER_IMAGE=${DOCKER_IMAGE}&DOCKER_TAG=${DOCKER_TAG}"
 
@@ -107,9 +120,9 @@ runs:
     if: failure()
     uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
     env:
-      FLOWDOCK_TOKEN: ${{ secrets.FLOWDOCK_TOKEN }}
+      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
       FLOWDOCK_ICON: 'warning'
-      FLOWDOCK_MESSAGE: 'Failed to build a new `${{ inputs.image }}` image from ${{ github.ref }}, please go check [GitHub](https://github.com/UN-OCHA/${{ github.repository }}/actions/workflows/docker-build-image.yml).'
+      FLOWDOCK_MESSAGE: 'Failed to build a new `${{ inputs.docker_image }}` image from ${{ github.ref }}, please go check [GitHub](https://github.com/UN-OCHA/${{ github.repository }}/actions/workflows/docker-build-image.yml).'
       FLOWDOCK_TAGS: 'build,docker,${{ github.actor }}'
 
   - name: Flowdock Success
@@ -117,7 +130,7 @@ runs:
     if: success()
     uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
     env:
-      FLOWDOCK_TOKEN: ${{ secrets.FLOWDOCK_TOKEN }}
+      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
       FLOWDOCK_ICON: 'package'
-      FLOWDOCK_MESSAGE: 'Built a new `${{ inputs.image }}` image from ${{ github.ref }} and pushed to [Amazon ECR](https://console.aws.amazon.com/ecr/repositories?region=us-east-1). Now pinging [Jenkins](https://jenkins.aws.ahconu.org/) to trigger a deploy.'
+      FLOWDOCK_MESSAGE: 'Built a new `${{ inputs.docker_image }}` image from ${{ github.ref }} and pushed to [Amazon ECR](https://console.aws.amazon.com/ecr/repositories?region=us-east-1). Now pinging [Jenkins](https://jenkins.aws.ahconu.org/) to trigger a deploy.'
       FLOWDOCK_TAGS: 'build,docker,${{ github.actor }}'
