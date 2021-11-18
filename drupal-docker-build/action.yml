@@ -80,6 +80,7 @@ runs:
       echo ::set-output name=VCS_URL::${VCS_URL}
       export BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
       echo ::set-output name=BUILD_DATE::${BUILD_DATE}
+    shell: bash
 
   - name: Build docker image
     id: build
@@ -114,6 +115,7 @@ runs:
       JENKINS_TOKEN: ${{ inputs.ecr_jenkins_token }}
     run: |
       curl -H "Token: ${JENKINS_TOKEN}" -X POST "https://jenkins.aws.ahconu.org/generic-webhook-trigger/invoke?DOCKER_IMAGE=${DOCKER_IMAGE}&DOCKER_TAG=${DOCKER_TAG}"
+    shell: bash
 
   - name: Flowdock Failure
     id: failure
