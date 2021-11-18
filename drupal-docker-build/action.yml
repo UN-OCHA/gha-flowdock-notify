@@ -135,7 +135,7 @@ runs:
     id: webhook
     if: success() && inputs.ecr_jenkins_token
     env:
-      DOCKER_IMAGE: ${{ inputs.image }}
+      DOCKER_IMAGE: ${{ inputs.docker_image }}
       DOCKER_TAG: ${{ steps.meta.outputs.DOCKER_TAG }}
       JENKINS_TOKEN: ${{ inputs.ecr_jenkins_token }}
     run: |
