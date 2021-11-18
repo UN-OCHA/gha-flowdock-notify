@@ -43,6 +43,17 @@ inputs:
     description: "The flowdock token"
     required: false
     type: string
+  flowdock_icon_failure:
+    description: "The icon to attach to the flowdock failure message"
+    default: 'boom'
+    required: false
+    type: string
+  flowdock_icon_success:
+    description: "The icon to attach to the flowdock success message"
+    default: 'package'
+    required: false
+    type: string
+
 
 runs:
   using: "composite"
@@ -137,7 +148,7 @@ runs:
     uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
     env:
       FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
-      FLOWDOCK_ICON: 'warning'
+      FLOWDOCK_ICON: ${{ inputs.flowdock_icon_failure }}
       FLOWDOCK_MESSAGE: 'Failed to build a new `${{ inputs.docker_image }}` image from ${{ github.ref }}, please go check [GitHub](https://github.com/UN-OCHA/${{ github.repository }}/actions/workflows/docker-build-image.yml).'
       FLOWDOCK_TAGS: 'build,docker,${{ github.actor }}'
 
@@ -147,6 +158,6 @@ runs:
     uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
     env:
       FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
-      FLOWDOCK_ICON: 'package'
+      FLOWDOCK_ICON: ${{ inputs.flowdock_icon_success }}
       FLOWDOCK_MESSAGE: 'Built a new `${{ inputs.docker_image }}` image from ${{ github.ref }} and pushed to [Amazon ECR](https://console.aws.amazon.com/ecr/repositories?region=us-east-1). Now pinging [Jenkins](https://jenkins.aws.ahconu.org/) to trigger a deploy.'
       FLOWDOCK_TAGS: 'build,docker,${{ github.actor }}'
