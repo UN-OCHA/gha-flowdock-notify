@@ -1,126 +1,43 @@
 name: "Drupal Updates Workflow"
-description: "Does docker authentication, build, push and notification."
+description: "Does aall the magic."
 
 inputs:
-  aws_access_key_id:
-    description: "An Amazon IAM access key"
-    required: true
-    type: string
-  aws_secret_access_key:
-    description: "An Amazon IAM access secret"
-    required: true
-    type: string
-  docker_registry_url:
-    description: "The docker registry URL"
-    required: true
-    type: string
-  docker_registry_path:
-    description: "The docker registry path (organisation) component"
-    required: false
-    default: '/'
-    type: string
-  docker_username:
-    description: "The docker registry username"
-    required: false
-    type: string
-  docker_password:
-    description: "The docker registry password"
-    required: false
-    type: string
-  docker_image:
-    description: "The docker image name"
-    required: true
-    type: string
-  ecr_github_token:
-    description: "An authentication token for Amazon ECR to access GitHub"
+    flowdock_token:
+    description: "The flowdock token"
     required: false
     type: string
 
 runs:
   using: "composite"
   steps:
-  - name: Configure AWS Credentials
-    id: aws
-    if: ${{ inputs.ECR_AWS_ACCESS_KEY_ID }}
-    uses: aws-actions/configure-aws-credentials@v1
-    with:
-      aws-access-key-id: ${{ inputs.aws_access_key_id }}
-      aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-      aws-region: us-east-1
-
-  - name: Login to Public ECR
-    id: login-public
-    if: inputs.docker_username
-    uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-    with:
-      registry: public.ecr.aws
-      username: ${{ inputs.docker_username }}
-      password: ${{ inputs.docker_password }}
-    env:
-      AWS_REGION: us-east-1
-
-  - name: Login to Private ECR
-    id: login-private
-    if: endsWith(inputs.docker_registry_url, '.amazonaws.com') && inputs.docker_username
-    uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-    with:
-      registry: ${{ inputs.docker_registry_url }}
-      username: ${{ inputs.docker_username }}
-      password: ${{ inputs.docker_password }}
-    env:
-      AWS_REGION: us-east-1
-
   - name: Composer Update
     id: update
-    uses: public.ecr.aws/unocha/php:8.0-stable
-    run: composer update --with-dependencies drupal/*
-    continue-on-error: true
+    uses: kawax/composer-update-action@v2
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GIT_NAME: 'unocha-jenkins'
+      GIT_EMAIL: 'ops+github@reliefweb.int'
+      APP_SINGLE_BRANCH: 1
+      APP_SINGLE_BRANCH_POSTFIX: -updated
+      GIT_COMMIT_PREFIX: '[UPDATE] '
+      COMPOSER_PACKAGES: 'druypal/*'
 
-  - name: Create Pull Request
-    id: pull
-    uses: peter-evans/create-pull-request@main
-    with:
-      token: ${{ secrets.PAT }}
-      commit-message: '[UPDATES] Periodic pull request after updating all outdated drupal packages.'
-      title: '[UPDATES] Periodic Updates'
-      body: |
-        Automatic pull request after trying to run composer update drupal/* on all the Drupal packages.
-      committer: "unocha-jenkins <ops+github@reliefweb.int>"
-      author: "unocha-jenkins <ops+github@reliefweb.int>"
-      branch: update/patch
-      branch-suffix: short-commit-hash
-      base: develop
-      assignees: ${{ secrets.DRUPAL_MAINTAINERS }}
-      team-reviewers: digital-services-drupal-maintainers
+  - name: Flowdock Failure
+    id: failure
+    if: failure()
+    uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
+    env:
+      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
+      FLOWDOCK_ICON: ${{ inputs.flowdock_icon_failure }}
+      FLOWDOCK_MESSAGE: 'Failed to composer updates for ${{ github.ref }}, please go check [GitHub](https://github.com/${{ github.repository }}/actions/workflows/updates.yml).'
+      FLOWDOCK_TAGS: 'update,composer,${{ github.actor }}'
 
-  - name: Post Comment
-    id: comment
-    uses: actions/github-script@0.9.0
-    with:
-      github-token: ${{ secrets.PAT }}
-      script: |
-        const output = `#### Composer Update \`${{ steps.update.outcome }}\`
-        
-        <details><summary>Show Updates</summary>
-        
-        \`\`\`${{ steps.update.outputs.stdout }}\`\`\`
-        
-        </details>
-        
-        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
-        
-        github.issues.createComment({
-          issue_number: ${{ steps.pull.outputs.pull-request-number }},
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          body: output
-        })
-
-      - name: Flowdock Notify
-        id: flowdock
-        uses: docker://unocha/actions:flowdock-notify-main
-        env:
-          FLOWDOCK_TOKEN: ${{ secrets.FLOWDOCK_TOKEN }}
-          FLOWDOCK_ICON: 'jeans'
-          FLOWDOCK_MESSAGE: 'Created an up to date pull request for ${{ git.hub.repository }}(${{ steps.pull.outputs.pull-request-url }}) from ${{ github.ref }}.'
-          FLOWDOCK_TAGS: 'updates,pull,${{ github.actor }}''
+  - name: Flowdock Success
+    id: success
+    if: success()
+    uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
+    env:
+      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
+      FLOWDOCK_ICON: ${{ inputs.flowdock_icon_success }}
+      FLOWDOCK_MESSAGE: 'Found composer updates for ${{ github.ref }} and made a new pull request.'
+      FLOWDOCK_TAGS: 'update,composer,${{ github.actor }}'
