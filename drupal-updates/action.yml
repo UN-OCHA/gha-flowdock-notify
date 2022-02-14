@@ -2,7 +2,7 @@ name: "Drupal Updates Workflow"
 description: "Does aall the magic."
 
 inputs:
-    flowdock_token:
+  flowdock_token:
     description: "The flowdock token"
     required: false
     type: string
