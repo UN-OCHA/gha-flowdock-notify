@@ -1,7 +1,11 @@
 name: "Drupal Updates Workflow"
-description: "Does aall the magic."
+description: "Does allllll the magic."
 
 inputs:
+  github_token:
+    description: "The github token"
+    required: false
+    type: string
   flowdock_token:
     description: "The flowdock token"
     required: false
@@ -14,7 +18,7 @@ runs:
     id: update
     uses: kawax/composer-update-action@v2
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ inputs.github_token }}
       GIT_NAME: 'unocha-jenkins'
       GIT_EMAIL: 'ops+github@reliefweb.int'
       APP_SINGLE_BRANCH: 1
