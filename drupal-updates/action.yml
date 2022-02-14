@@ -30,6 +30,7 @@ runs:
     if: failure()
     uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
     env:
+      GITHUB_TOKEN: ${{ inputs.github_token }}
       FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
       FLOWDOCK_ICON: ${{ inputs.flowdock_icon_failure }}
       FLOWDOCK_MESSAGE: 'Failed to composer updates for ${{ github.ref }}, please go check [GitHub](https://github.com/${{ github.repository }}/actions/workflows/updates.yml).'
