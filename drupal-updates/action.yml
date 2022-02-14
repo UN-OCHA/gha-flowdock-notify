@@ -18,13 +18,12 @@ runs:
     id: update
     uses: kawax/composer-update-action@v2
     env:
-      GITHUB_TOKEN: ${{ inputs.github_token }}
       GIT_NAME: 'unocha-jenkins'
       GIT_EMAIL: 'ops+github@reliefweb.int'
       APP_SINGLE_BRANCH: 1
       APP_SINGLE_BRANCH_POSTFIX: -updated
       GIT_COMMIT_PREFIX: '[UPDATE] '
-      COMPOSER_PACKAGES: 'druypal/*'
+      COMPOSER_PACKAGES: 'drupal/*'
 
   - name: Flowdock Failure
     id: failure
