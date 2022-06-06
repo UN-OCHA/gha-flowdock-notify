@@ -164,7 +164,7 @@ runs:
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "Docker image build for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}",
+                "text": "Docker image build for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}"
               },
               "accessory": {
                 "type": "button",
@@ -174,7 +174,7 @@ runs:
                   "emoji": false
                 },
                 "value": "run_details",
-                "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}?check_suite_focus=true",
+                "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}?check_suite_focus=true"
               }
             }
           ]
