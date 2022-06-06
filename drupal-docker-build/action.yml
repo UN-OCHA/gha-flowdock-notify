@@ -39,6 +39,14 @@ inputs:
     description: "An authentication token for GitHub to access Jenkins"
     required: false
     type: string
+  slack_webhook:
+    description: "The slack webhook to post the message to"
+    require: false
+    type: string
+  slack_channel:
+    description: "The slack channel to send the message to"
+    require: false
+    type: string
   flowdock_token:
     description: "The flowdock token"
     required: false
@@ -142,9 +150,35 @@ runs:
       curl -H "Token: ${JENKINS_TOKEN}" -X POST "https://jenkins.aws.ahconu.org/generic-webhook-trigger/invoke?DOCKER_IMAGE=${DOCKER_IMAGE}&DOCKER_TAG=${DOCKER_TAG}"
     shell: bash
 
+  - name: Slack Failure
+    id: slack
+    if: failure() && inputs.slack_webhook && inputs.slack_channel
+    uses: slackapi/slack-github-action@v1.19.0
+    with:
+      payload: |
+        {
+          "channel": "${{ inputs.slack_channel }}",
+          "message": "Failed to build a new `${{ inputs.docker_image }}` image from ${{ github.ref }}, please go check [GitHub](https://github.com/${{ github.repository }}/actions/workflows/docker-build-image.yml)."
+      }
+    env:
+      SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
+
+  - name: Slack Success
+    id: slack
+    if: success() && inputs.slack_webhook && inputs.slack_channel
+    uses: slackapi/slack-github-action@v1.19.0
+    with:
+      payload: |
+        {
+          "channel": "${{ inputs.slack_channel }}",
+          "message": "Built a new `${{ inputs.docker_image }}` image from ${{ github.ref }} and pushed to [Amazon ECR](https://console.aws.amazon.com/ecr/repositories?region=us-east-1). Now pinging [Jenkins](https://jenkins.aws.ahconu.org/) to trigger a deploy."
+      }
+    env:
+      SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
+
   - name: Flowdock Failure
     id: failure
-    if: failure()
+    if: failure() && inputs.flowdock_token
     uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
     env:
       FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
@@ -154,7 +188,7 @@ runs:
 
   - name: Flowdock Success
     id: success
-    if: success()
+    if: success() && inputs.flowdock_token
     uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
     env:
       FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
