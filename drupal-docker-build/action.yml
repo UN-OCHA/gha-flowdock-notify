@@ -158,7 +158,7 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
-          "text": "GitHub Action build for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}"
+          "text": "GitHub Action build for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}",
           "blocks": [
             {
               "type": "section",
