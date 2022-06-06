@@ -39,11 +39,11 @@ inputs:
     description: "An authentication token for GitHub to access Jenkins"
     required: false
     type: string
-  slack_webhook:
+  slack_webhook_url:
     description: "The slack webhook to post the message to"
     require: false
     type: string
-  slack_channel:
+  slack_channel_name:
     description: "The slack channel to send the message to"
     require: false
     type: string
@@ -152,29 +152,29 @@ runs:
 
   - name: Slack Failure
     id: slack_failure
-    if: failure() && inputs.slack_webhook && inputs.slack_channel
+    if: failure() && inputs.slack_webhook_url && inputs.slack_channel_name
     uses: slackapi/slack-github-action@v1.19.0
     with:
       payload: |
         {
-          "channel": "${{ inputs.slack_channel }}",
+          "channel": "${{ inputs.slack_channel_name }}",
           "message": "Failed to build a new `${{ inputs.docker_image }}` image from ${{ github.ref }}, please go check [GitHub](https://github.com/${{ github.repository }}/actions/workflows/docker-build-image.yml)."
         }
     env:
-      SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
+      SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook_url }}
 
   - name: Slack Success
     id: slack_success
-    if: success() && inputs.slack_webhook && inputs.slack_channel
+    if: success() && inputs.slack_webhook_url && inputs.slack_channel_name
     uses: slackapi/slack-github-action@v1.19.0
     with:
       payload: |
         {
-          "channel": "${{ inputs.slack_channel }}",
+          "channel": "${{ inputs.slack_channel_name }}",
           "message": "Built a new `${{ inputs.docker_image }}` image from ${{ github.ref }} and pushed to [Amazon ECR](https://console.aws.amazon.com/ecr/repositories?region=us-east-1). Now pinging [Jenkins](https://jenkins.aws.ahconu.org/) to trigger a deploy."
         }
     env:
-      SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
+      SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook_url }}
 
   - name: Flowdock Failure
     id: failure
