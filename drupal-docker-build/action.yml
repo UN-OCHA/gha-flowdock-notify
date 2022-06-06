@@ -159,7 +159,7 @@ runs:
         {
           "channel": "${{ inputs.slack_channel }}",
           "message": "Failed to build a new `${{ inputs.docker_image }}` image from ${{ github.ref }}, please go check [GitHub](https://github.com/${{ github.repository }}/actions/workflows/docker-build-image.yml)."
-      }
+        }
     env:
       SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
 
@@ -172,7 +172,7 @@ runs:
         {
           "channel": "${{ inputs.slack_channel }}",
           "message": "Built a new `${{ inputs.docker_image }}` image from ${{ github.ref }} and pushed to [Amazon ECR](https://console.aws.amazon.com/ecr/repositories?region=us-east-1). Now pinging [Jenkins](https://jenkins.aws.ahconu.org/) to trigger a deploy."
-      }
+        }
     env:
       SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
 
