@@ -151,7 +151,7 @@ runs:
     shell: bash
 
   - name: Slack Failure
-    id: slack
+    id: slack_failure
     if: failure() && inputs.slack_webhook && inputs.slack_channel
     uses: slackapi/slack-github-action@v1.19.0
     with:
@@ -164,7 +164,7 @@ runs:
       SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
 
   - name: Slack Success
-    id: slack
+    id: slack_success
     if: success() && inputs.slack_webhook && inputs.slack_channel
     uses: slackapi/slack-github-action@v1.19.0
     with:
