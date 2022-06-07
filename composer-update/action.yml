@@ -41,8 +41,8 @@ inputs:
 
 runs:
   uses: public.ecr.aws/unocha/php:8.0-stable
-
   steps:
+
   - name: Git work-around
     id: workaround
     run: git config --global --add safe.directory ${{ env.GITHUB_WORKSPACE }}
@@ -102,25 +102,25 @@ runs:
       script: |
         const output = `#### Composer Update \`${{ steps.update.outcome }}\`
         #### Running \`composer update -W drupal/*\` to update all Drupal core and contrib packages
-········
+        
         <details><summary>Composer Outdated</summary>
-········
+        
         \`\`\`${process.env.OUTDATED}\`\`\`
-········
+        
         </details>
         <details><summary>Composer Update Status</summary>
 
         \`\`\`${process.env.UPDATES}\`\`\`
-········
+        
         </details>
         <details><summary>Composer Update Messages</summary>
-········
+        
         \`\`\`${process.env.ERRORS}\`\`\`
-········
+        
         </details>
-········
+        
         *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
-········
+        
         github.issues.createComment({
           issue_number: ${{ steps.pull.outputs.pull-request-number }},
           owner: context.repo.owner,
