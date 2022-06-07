@@ -40,12 +40,13 @@ inputs:
     type: string
 
 runs:
-  container: public.ecr.aws/unocha/php:8.0-stable
+  uses: public.ecr.aws/unocha/php:8.0-stable
 
   steps:
   - name: Git work-around
     id: workaround
     run: git config --global --add safe.directory ${{ env.GITHUB_WORKSPACE }}
+    shell: bash
 
   - name: Checkout code
     id: checkout
@@ -56,6 +57,7 @@ runs:
   - name: Composer Install
     id: install
     run: composer install
+    shell: bash
 
   - name: Composer Outdated
     id: outdated
@@ -125,7 +127,6 @@ runs:
           repo: context.repo.repo,
           body: output
         })
-
 
   - name: Slack Notification
     id: slack
