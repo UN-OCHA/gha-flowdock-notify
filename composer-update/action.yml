@@ -1,0 +1,170 @@
+name: "Composer Update Workflow"
+description: "Updates all specified composer packages and creates a pull request with the changes."
+
+inputs:
+  github_access_token:
+    description: "A GitHub personal access token."
+    required: true
+    type: string
+  patch_branch:
+    description: "The base branch to create a pull request sgainst when there are updates."
+    required: false
+    default: "develop"
+    type: string
+  patch_packages:
+    description: "The package(s) to check for updates."
+    required: false
+    default: "drupal/*"
+    type: string
+  patch_author:
+    description: "A git identifier for the author of the patch that is to be created."
+    required: false
+    type: string
+    default: "unocha-jenkins <ops+github@reliefweb.int>"
+  patch_maintainers:
+    description: "A comma delimited list of repository maintainers who will be assigned for review."
+    required: false
+    type: string
+    default: "digital-services-drupal-maintainers"
+  slack_bot_token:
+    description: "The secret slack authentication token"
+    require: false
+    type: string
+  slack_channel_name:
+    description: "The slack channel to send the message to"
+    require: false
+    type: string
+  flowdock_token:
+    description: "The flowdock token"
+    required: false
+    type: string
+
+runs:
+  container: public.ecr.aws/unocha/php:8.0-stable
+
+  steps:
+  - name: Git work-around
+    id: workaround
+    run: git config --global --add safe.directory ${{ env.GITHUB_WORKSPACE }}
+
+  - name: Checkout code
+    id: checkout
+    uses: actions/checkout@v3
+    with:
+      ref: '${{ inputs.patch_branch }}'
+
+  - name: Composer Install
+    id: install
+    run: composer install
+
+  - name: Composer Outdated
+    id: outdated
+    uses: mathiasvr/command-output@v1
+    with:
+      run: composer outdated ${{ inputs.patch_packages }}
+    continue-on-error: true
+
+  - name: Composer Update
+    id: update
+    uses: mathiasvr/command-output@v1
+    with:
+      run: composer update --with-dependencies ${{ inputs.patch_packages }}
+    continue-on-error: true
+
+  - name: Create Pull Request
+    id: pull
+    uses: peter-evans/create-pull-request@v4
+    with:
+      token: ${{ inputs.github_access_token }}
+      commit-message: "[UPDATES] Periodic pull request after updating all outdated ${{ inputs.patch_packages }} packages."
+      title: "[UPDATES] Periodic Updates"
+      body: |
+        - Automatic pull request after trying to run composer update ${{ inputs.patch_packages }}.
+      committer: ${{ inputs.patch_author }}
+      author: ${{ inputs.patch_author }}
+      branch: update/patch
+      branch-suffix: short-commit-hash
+      base: ${{ inputs.patch_branch }}
+      assignees: ${{ inputs.patch_maintainers}}
+      team-reviewers: ${{ inputs.patch_maintainers}}
+    shell: bash
+
+  - name: Post Comment
+    uses: actions/github-script@0.9.0
+    env:
+      OUTDATED: "composer outdated\n${{ steps.outdated.outputs.stdout }}"
+      UPDATES: "composer update\n${{ steps.update.outputs.stdout }}"
+      ERRORS: "composer errors\n${{ steps.update.outputs.stderr }}"
+    with:
+      github-token: ${{ inputs.github_access_token }}
+      script: |
+        const output = `#### Composer Update \`${{ steps.update.outcome }}\`
+        #### Running \`composer update -W drupal/*\` to update all Drupal core and contrib packages
+········
+        <details><summary>Composer Outdated</summary>
+········
+        \`\`\`${process.env.OUTDATED}\`\`\`
+········
+        </details>
+        <details><summary>Composer Update Status</summary>
+
+        \`\`\`${process.env.UPDATES}\`\`\`
+········
+        </details>
+        <details><summary>Composer Update Messages</summary>
+········
+        \`\`\`${process.env.ERRORS}\`\`\`
+········
+        </details>
+········
+        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+········
+        github.issues.createComment({
+          issue_number: ${{ steps.pull.outputs.pull-request-number }},
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: output
+        })
+
+
+  - name: Slack Notification
+    id: slack
+    if: inputs.slack_bot_token && inputs.slack_channel_name
+    uses: slackapi/slack-github-action@v1.19.0
+    with:
+      channel-id: '${{ inputs.slack_channel_name }}'
+      payload: |
+        {
+          "text": "Created an up to date pull request for ${{ github.action.repository }} from ${{ github.ref }}",
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "Created an up to date pull request for ${{ github.action.repository }} from ${{ github.ref }}",
+              },
+              "accessory": {
+                "type": "button",
+                "text": {
+                  "type": "plain_text",
+                  "text": "Pull Request",
+                  "emoji": false
+                },
+                "value": "pull_request",
+                "url": "${{ steps.pull.outputs.pull-request-url }}"
+              }
+            }
+          ]
+        }
+    env:
+      SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
+
+  - name: Flowdock Success
+    id: flowdock
+    if: inputs.flowdock_token
+    uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
+    env:
+      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
+      FLOWDOCK_ICON: 'jeans'
+      FLOWDOCK_MESSAGE: 'Created an up to date pull request for [${{ github.action.repository }}](${{ steps.pull.outputs.pull-request-url }}) from ${{ github.ref }}.'
+      FLOWDOCK_TAGS: 'pull,${{ github.actor }}'
