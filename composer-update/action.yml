@@ -7,7 +7,7 @@ inputs:
     required: true
     type: string
   patch_branch:
-    description: "The base branch to create a pull request sgainst when there are updates."
+    description: "The base branch to create a pull request against when there are updates."
     required: false
     default: "develop"
     type: string
