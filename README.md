@@ -33,7 +33,7 @@ jobs:
 
 ## drupal-docker-build
 
-``yaml
+```yaml
 jobs:
   build:
     runs-on: ubuntu-latest
