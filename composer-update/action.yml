@@ -40,13 +40,13 @@ inputs:
     type: string
 
 runs:
-  uses: public.ecr.aws/unocha/php:8.0-stable
   steps:
 
   - name: Git work-around
     id: workaround
-    run: git config --global --add safe.directory ${{ env.GITHUB_WORKSPACE }}
-    shell: bash
+    uses: mathiasvr/command-output@v1
+    with:
+      run: git config --global --add safe.directory ${{ env.GITHUB_WORKSPACE }}
 
   - name: Checkout code
     id: checkout
@@ -56,8 +56,9 @@ runs:
 
   - name: Composer Install
     id: install
-    run: composer install
-    shell: bash
+    uses: mathiasvr/command-output@v1
+    with:
+      run: composer install
 
   - name: Composer Outdated
     id: outdated
@@ -89,7 +90,6 @@ runs:
       base: ${{ inputs.patch_branch }}
       assignees: ${{ inputs.patch_maintainers}}
       team-reviewers: ${{ inputs.patch_maintainers}}
-    shell: bash
 
   - name: Post Comment
     uses: actions/github-script@0.9.0
