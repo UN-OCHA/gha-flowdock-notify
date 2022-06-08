@@ -137,22 +137,22 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
-          "text": "Created an up to date pull request for ${{ github.action.repository }} from ${{ github.ref }}",
+          "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }}",
           "blocks": [
             {
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "Created an up to date pull request for ${{ github.action.repository }} from ${{ github.ref }}"
+                "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }}"
               },
               "accessory": {
                 "type": "button",
                 "text": {
                   "type": "plain_text",
-                  "text": "Pull Request",
+                  "text": "Review",
                   "emoji": false
                 },
-                "value": "pull_request",
+                "value": "review",
                 "url": "${{ steps.pull.outputs.pull-request-url }}"
               }
             }
@@ -168,5 +168,5 @@ runs:
     env:
       FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
       FLOWDOCK_ICON: 'jeans'
-      FLOWDOCK_MESSAGE: 'Created an up to date pull request for [${{ github.action.repository }}](${{ steps.pull.outputs.pull-request-url }}) from ${{ github.ref }}.'
+      FLOWDOCK_MESSAGE: 'Created an up to date pull request for [${{ github.repository }}](${{ steps.pull.outputs.pull-request-url }}) from ${{ github.ref }}.'
       FLOWDOCK_TAGS: 'pull,${{ github.actor }}'
