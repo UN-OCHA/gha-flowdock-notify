@@ -143,7 +143,7 @@ runs:
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "Created an up to date pull request for ${{ github.action.repository }} from ${{ github.ref }}",
+                "text": "Created an up to date pull request for ${{ github.action.repository }} from ${{ github.ref }}"
               },
               "accessory": {
                 "type": "button",
