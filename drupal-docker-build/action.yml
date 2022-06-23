@@ -164,17 +164,7 @@ runs:
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "Docker image build ${{ job.status }} for `${{ inputs.docker_image }}` image from ${{ github.ref }}"
-              },
-              "accessory": {
-                "type": "button",
-                "text": {
-                  "type": "plain_text",
-                  "text": "Details",
-                  "emoji": false
-                },
-                "value": "run_details",
-                "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                "text": "Docker image build ${{ job.status }} for `${{ inputs.docker_image }}` image from ${{ github.ref }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Details>)"
               }
             }
           ]
