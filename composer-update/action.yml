@@ -137,23 +137,13 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
-          "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }}",
+          "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }}",
           "blocks": [
             {
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }}"
-              },
-              "accessory": {
-                "type": "button",
-                "text": {
-                  "type": "plain_text",
-                  "text": "Review",
-                  "emoji": false
-                },
-                "value": "review",
-                "url": "${{ steps.pull.outputs.pull-request-url }}"
+                "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
               }
             }
           ]
