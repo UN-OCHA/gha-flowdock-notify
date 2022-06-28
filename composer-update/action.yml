@@ -80,10 +80,10 @@ runs:
     uses: peter-evans/create-pull-request@v4
     with:
       token: ${{ inputs.github_access_token }}
-      commit-message: "[UPDATES] Periodic pull request after updating all outdated ${{ inputs.patch_packages }} packages."
-      title: "[UPDATES] Periodic Updates"
+      commit-message: "chore: Update all outdated ${{ inputs.patch_packages }} packages."
+      title: "Periodic Updates"
       body: |
-        - Automatic pull request after trying to run composer update ${{ inputs.patch_packages }}.
+        - Automatic pull request after runing composer update ${{ inputs.patch_packages }}.
       committer: ${{ inputs.patch_author }}
       author: ${{ inputs.patch_author }}
       branch: update/patch
