@@ -48,16 +48,16 @@ inputs:
     require: false
     type: string
   flowdock_token:
-    description: "The flowdock token"
+    description: "The flowdock token. This is ignored."
     required: false
     type: string
   flowdock_icon_failure:
-    description: "The icon to attach to the flowdock failure message"
+    description: "The icon to attach to the flowdock failure message. This is ignored."
     default: 'boom'
     required: false
     type: string
   flowdock_icon_success:
-    description: "The icon to attach to the flowdock success message"
+    description: "The icon to attach to the flowdock success message. This is ignored."
     default: 'package'
     required: false
     type: string
@@ -171,23 +171,3 @@ runs:
         }
     env:
       SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
-
-  - name: Flowdock Failure
-    id: failure
-    if: failure() && inputs.flowdock_token
-    uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
-    env:
-      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
-      FLOWDOCK_ICON: ${{ inputs.flowdock_icon_failure }}
-      FLOWDOCK_MESSAGE: 'Failed to build a new `${{ inputs.docker_image }}` image from ${{ github.ref }}, please go check [GitHub](https://github.com/${{ github.repository }}/actions/workflows/docker-build-image.yml).'
-      FLOWDOCK_TAGS: 'build,docker,${{ github.actor }}'
-
-  - name: Flowdock Success
-    id: success
-    if: success() && inputs.flowdock_token
-    uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
-    env:
-      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
-      FLOWDOCK_ICON: ${{ inputs.flowdock_icon_success }}
-      FLOWDOCK_MESSAGE: 'Built a new `${{ inputs.docker_image }}` image from ${{ github.ref }} and pushed to [Amazon ECR](https://console.aws.amazon.com/ecr/repositories?region=us-east-1). Now pinging [Jenkins](https://jenkins.aws.ahconu.org/) to trigger a deploy.'
-      FLOWDOCK_TAGS: 'build,docker,${{ github.actor }}'

@@ -35,7 +35,7 @@ inputs:
     require: false
     type: string
   flowdock_token:
-    description: "The flowdock token"
+    description: "The flowdock token. This is ignored."
     required: false
     type: string
 
@@ -150,13 +150,3 @@ runs:
         }
     env:
       SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
-
-  - name: Flowdock Success
-    id: flowdock
-    if: inputs.flowdock_token
-    uses: docker://ghcr.io/un-ocha/actions:flowdock-notify-main
-    env:
-      FLOWDOCK_TOKEN: ${{ inputs.flowdock_token }}
-      FLOWDOCK_ICON: 'jeans'
-      FLOWDOCK_MESSAGE: 'Created an up to date pull request for [${{ github.repository }}](${{ steps.pull.outputs.pull-request-url }}) from ${{ github.ref }}.'
-      FLOWDOCK_TAGS: 'pull,${{ github.actor }}'
