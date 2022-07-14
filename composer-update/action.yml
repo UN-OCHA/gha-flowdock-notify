@@ -50,7 +50,7 @@ runs:
 
   - name: Software versions
     id: versions
-    uses: 'docker://${{ inputs.docker_image }}'
+    uses: docker://${{ inputs.docker_image }}
     with:
       run: php --version && composer --version
 
@@ -70,14 +70,14 @@ runs:
   - name: Composer Install
     id: install
     # uses: mathiasvr/command-output@v1
-    uses: 'docker://${{ inputs.docker_image }}'
+    uses: docker://${{ inputs.docker_image }}
     with:
       run: composer install
 
   - name: Composer Outdated
     id: outdated
     # uses: mathiasvr/command-output@v1
-    uses: 'docker://${{ inputs.docker_image }}'
+    uses: docker://${{ inputs.docker_image }}
     with:
       run: composer outdated ${{ inputs.patch_packages }}
     continue-on-error: true
@@ -85,7 +85,7 @@ runs:
   - name: Composer Update
     id: update
     # uses: mathiasvr/command-output@v1
-    uses: 'docker://${{ inputs.docker_image }}'
+    uses: docker://${{ inputs.docker_image }}
     with:
       run: composer update --with-dependencies ${{ inputs.patch_packages }}
     continue-on-error: true
