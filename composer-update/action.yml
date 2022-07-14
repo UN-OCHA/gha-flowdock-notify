@@ -26,7 +26,6 @@ inputs:
     required: false
     type: string
     default: "digital-services-drupal-maintainers"
-    default: "docker://public.ecr.aws/unocha/unified-builder:8.0-stable"
   slack_bot_token:
     description: "The secret slack authentication token"
     require: false
@@ -53,7 +52,6 @@ runs:
   - name: Git work-around
     id: workaround
     # uses: mathiasvr/command-output@v1
-    uses: ${{ inputs.docker_image }}
     uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
     with:
       run: git config --global --add safe.directory ${{ github.workspace }}
