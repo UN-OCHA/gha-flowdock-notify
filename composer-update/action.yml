@@ -65,6 +65,7 @@ runs:
   - name: Composer Install
     id: install
     # uses: mathiasvr/command-output@v1
+    uses: UN-OCHA/actions/command-output@feature/use-builder-image
     with:
       run: composer install
 
