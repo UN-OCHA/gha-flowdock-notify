@@ -20,6 +20,7 @@ branding:
 runs:
   using: "composite"
   steps:
+  - name: Command wrapper
     uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
     with:
       run: nodejs dist/main.js
