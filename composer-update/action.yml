@@ -26,6 +26,11 @@ inputs:
     required: false
     type: string
     default: "digital-services-drupal-maintainers"
+  docker_image:
+    description: "A docker base image to run all composer commands with."
+    required: false
+    type: string
+    default: "public.ecr.aws/unocha/unified-builder:8.0-stable"
   slack_bot_token:
     description: "The secret slack authentication token"
     require: false
@@ -42,7 +47,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
+  - uses: 'docker://${{ inputs.docker_image }}'
 
   - name: Software versions
     id: versions
