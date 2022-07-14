@@ -23,4 +23,4 @@ runs:
   - name: Command wrapper
     uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
     with:
-      run: nodejs dist/main.js
+      run: node dist/main.js
