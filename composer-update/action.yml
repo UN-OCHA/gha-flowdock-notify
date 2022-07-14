@@ -124,7 +124,7 @@ runs:
         const output = `#### Composer Update \`${{ steps.update.outcome }}\`
         #### Running \`composer update -W drupal/*\` to update all Drupal core and contrib packages
         
-        <details><summary>Versions</summary>
+        <details><summary>Software Versions</summary>
         
         \`\`\`${process.env.VERSIONS}\`\`\`
         
