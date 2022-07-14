@@ -45,14 +45,14 @@ runs:
 
   - name: Software versions
     id: versions
-    uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
+    uses: UN-OCHA/actions/command-output@feature/use-builder-image
     with:
       run: php --version && composer --version
 
   - name: Git work-around
     id: workaround
     # uses: mathiasvr/command-output@v1
-    uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
+    uses: UN-OCHA/actions/command-output@feature/use-builder-image
     with:
       run: git config --global --add safe.directory ${{ github.workspace }}
 
@@ -65,14 +65,13 @@ runs:
   - name: Composer Install
     id: install
     # uses: mathiasvr/command-output@v1
-    uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
     with:
       run: composer install
 
   - name: Composer Outdated
     id: outdated
     # uses: mathiasvr/command-output@v1
-    uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
+    uses: UN-OCHA/actions/command-output@feature/use-builder-image
     with:
       run: composer outdated ${{ inputs.patch_packages }}
     continue-on-error: true
@@ -80,7 +79,7 @@ runs:
   - name: Composer Update
     id: update
     # uses: mathiasvr/command-output@v1
-    uses: docker://public.ecr.aws/unocha/unified-builder:8.0-stable
+    uses: UN-OCHA/actions/command-output@feature/use-builder-image
     with:
       run: composer update --with-dependencies ${{ inputs.patch_packages }}
     continue-on-error: true
