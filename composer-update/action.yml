@@ -26,13 +26,18 @@ inputs:
     required: false
     type: string
     default: "digital-services-drupal-maintainers"
+  php_version:
+    description: "The PHP version to use for all composer commands."
+    required: false
+    type: string
+    default: "8.0"
   slack_bot_token:
     description: "The secret slack authentication token"
-    require: false
+    required: false
     type: string
   slack_channel_name:
     description: "The slack channel to send the message to"
-    require: false
+    required: false
     type: string
   flowdock_token:
     description: "The flowdock token. This is ignored."
@@ -42,6 +47,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+
+  - name: Setup PHP with PECL extension
+    uses: shivammathur/setup-php@v2
+    with:
+      php-version: ${{ inputs.php_version }}
+      tools: composer
+    env:
+      fail-fast: true
 
   - name: Software versions
     id: versions
