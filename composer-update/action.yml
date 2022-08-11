@@ -91,7 +91,7 @@ runs:
     id: update
     uses: mathiasvr/command-output@v1
     with:
-      run: composer update --with-dependencies ${{ inputs.patch_packages }}
+      run: composer update --with-all-dependencies ${{ inputs.patch_packages }}
     continue-on-error: true
 
   - name: Create Pull Request
@@ -122,7 +122,7 @@ runs:
       github-token: ${{ inputs.github_access_token }}
       script: |
         const output = `#### Composer Update \`${{ steps.update.outcome }}\`
-        #### Running \`composer update -W drupal/*\` to update all Drupal core and contrib packages
+        #### Running \`composer update --with-all-dependencies ${{ inputs.patch_packages }}\` to update all Drupal core and contrib packages
         
         <details><summary>Software Versions</summary>
         
