@@ -31,6 +31,11 @@ inputs:
     description: "The docker image name"
     required: true
     type: string
+  docker_file:
+    description: "The (relative) path to the Dockerfile to sue for the build"
+    required: false
+    default: 'docker/Dockerfile'
+    type: string
   ecr_github_token:
     description: "An authentication token for Amazon ECR to access GitHub"
     required: false
@@ -133,7 +138,7 @@ runs:
         info.humanitarianresponse.build.person=${{ github.actor }}
         info.humanitarianresponse.build.vcs-url=${{ steps.meta.outputs.VCS_URL }}
         info.humanitarianresponse.build.vcs-ref=${{ steps.meta.outputs.VCS_REF }}
-      file: docker/Dockerfile
+      file: ${{ inputs.docker_file }}
       push: true
       tags: ${{ inputs.docker_registry_url }}${{ inputs.docker_registry_path }}${{ inputs.docker_image }}:${{ steps.meta.outputs.DOCKER_TAG }}
       secrets: |
