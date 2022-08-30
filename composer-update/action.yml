@@ -191,7 +191,7 @@ runs:
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "Failed to apply updates for ${{ github.repository }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
+                "text": "Failed to apply updates for ${{ github.repository }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Review>)"
               }
             }
           ]
