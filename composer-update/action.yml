@@ -110,6 +110,7 @@ runs:
       base: ${{ inputs.patch_branch }}
       assignees: ${{ inputs.patch_maintainers}}
       team-reviewers: ${{ inputs.patch_maintainers}}
+    continue-on-error: true
 
   - name: Post Comment
     uses: actions/github-script@0.9.0
@@ -154,9 +155,9 @@ runs:
           body: output
         })
 
-  - name: Slack Notification
-    id: slack
-    if: inputs.slack_bot_token && inputs.slack_channel_name
+  - name: Slack Success Notification
+    id: slack_success
+    if: success() && inputs.slack_bot_token && inputs.slack_channel_name
     uses: slackapi/slack-github-action@v1.19.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
@@ -169,6 +170,28 @@ runs:
               "text": {
                 "type": "mrkdwn",
                 "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
+              }
+            }
+          ]
+        }
+    env:
+      SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
+
+  - name: Slack Failure Notification
+    id: slack_failure
+    if: failure() && inputs.slack_bot_token && inputs.slack_channel_name
+    uses: slackapi/slack-github-action@v1.19.0
+    with:
+      channel-id: '${{ inputs.slack_channel_name }}'
+      payload: |
+        {
+          "text": "Failed to apply updates for ${{ github.repository }}",
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "Failed to apply updates for ${{ github.repository }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
               }
             }
           ]
