@@ -79,20 +79,21 @@ runs:
     uses: mathiasvr/command-output@v1
     with:
       run: composer install
+    continue-on-error: true
 
   - name: Composer Outdated
     id: outdated
     uses: mathiasvr/command-output@v1
     with:
       run: composer outdated ${{ inputs.patch_packages }}
-    continue-on-error: true
+    continue-on-error: false
 
   - name: Composer Update
     id: update
     uses: mathiasvr/command-output@v1
     with:
       run: composer update --with-all-dependencies ${{ inputs.patch_packages }}
-    continue-on-error: true
+    continue-on-error: false
 
   - name: Create Pull Request
     id: pull
