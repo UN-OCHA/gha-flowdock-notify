@@ -85,7 +85,7 @@ runs:
     id: outdated
     uses: mathiasvr/command-output@v1
     with:
-      run: composer outdated ${{ inputs.patch_packages }}
+      run: composer outdated --all
     continue-on-error: false
 
   - name: Composer Update
