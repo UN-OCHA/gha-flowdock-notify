@@ -115,7 +115,7 @@ runs:
       export VCS_REF=`git rev-parse --short HEAD`
       echo "VCS_REF=${VCS_REF}" >> $GITHUB_OUTPUT
       export VCS_URL=`git config --get remote.origin.url | sed 's#git@github.com:#https://github.com/#'`
-      echo "VCS_URL=${VCS_URL}" >> $GITBUB_OUTPUT
+      echo "VCS_URL=${VCS_URL}" >> $GITHUB_OUTPUT
       export BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
       echo "BUILD_DATE=${BUILD_DATE}" >> $GITHUB_OUTPUT
     shell: bash
