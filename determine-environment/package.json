@@ -17,6 +17,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/UN-OCHA/actions-determine-env.git"
+    "url": "https://github.com/UN-OCHA/actions/determine-environment.git"
   }
 }
