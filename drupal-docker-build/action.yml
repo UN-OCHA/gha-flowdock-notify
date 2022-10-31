@@ -82,7 +82,7 @@ runs:
 
   - name: Determine environment type
     id: env
-    uses: docker://ghcr.io/un-ocha/actions:determine-environment-v2
+    uses: docker://ghcr.io/un-ocha/actions:determine-environment-main
 
   - name: Login to Public ECR
     id: login-public
