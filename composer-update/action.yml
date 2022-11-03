@@ -114,7 +114,7 @@ runs:
     continue-on-error: true
 
   - name: Post Comment
-    uses: actions/github-script@0.9.0
+    uses: actions/github-script@v6
     env:
       VERSIONS: "software versions\n${{ steps.versions.outputs.stdout }}"
       OUTDATED: "composer outdated\n${{ steps.outdated.outputs.stdout }}"
