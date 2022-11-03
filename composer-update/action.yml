@@ -160,8 +160,8 @@ runs:
           issue_number: ${{ steps.pull.outputs.pull-request-number }},
           owner: context.repo.owner,
           repo: context.repo.repo,
-          labels: ['Automatic']
-         })
+          labels: ['automatic']
+        })
          
   - name: Slack Success Notification
     id: slack_success
