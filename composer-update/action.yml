@@ -58,13 +58,13 @@ runs:
 
   - name: Software versions
     id: versions
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: php --version && composer --version
 
   - name: Git work-around
     id: workaround
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: git config --global --add safe.directory ${{ github.workspace }}
 
@@ -76,21 +76,21 @@ runs:
 
   - name: Composer Install
     id: install
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: composer install
     continue-on-error: true
 
   - name: Composer Outdated
     id: outdated
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: composer outdated --all
     continue-on-error: false
 
   - name: Composer Update
     id: update
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: composer update --with-all-dependencies ${{ inputs.patch_packages }}
     continue-on-error: false
