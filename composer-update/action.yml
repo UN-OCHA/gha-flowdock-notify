@@ -58,13 +58,13 @@ runs:
 
   - name: Software versions
     id: versions
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: php --version && composer --version
 
   - name: Git work-around
     id: workaround
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: git config --global --add safe.directory ${{ github.workspace }}
 
@@ -76,21 +76,21 @@ runs:
 
   - name: Composer Install
     id: install
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: composer install
     continue-on-error: true
 
   - name: Composer Outdated
     id: outdated
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: composer outdated --all
     continue-on-error: false
 
   - name: Composer Update
     id: update
-    uses: mathiasvr/command-output@v1
+    uses: cafuego/command-output@main
     with:
       run: composer update --with-all-dependencies ${{ inputs.patch_packages }}
     continue-on-error: false
@@ -114,7 +114,7 @@ runs:
     continue-on-error: true
 
   - name: Post Comment
-    uses: actions/github-script@0.9.0
+    uses: actions/github-script@v6
     env:
       VERSIONS: "software versions\n${{ steps.versions.outputs.stdout }}"
       OUTDATED: "composer outdated\n${{ steps.outdated.outputs.stdout }}"
@@ -149,17 +149,24 @@ runs:
         
         *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
         
-        github.issues.createComment({
+        github.rest.issues.createComment({
           issue_number: ${{ steps.pull.outputs.pull-request-number }},
           owner: context.repo.owner,
           repo: context.repo.repo,
           body: output
         })
-
+            
+        github.rest.issues.addLabels({
+          issue_number: ${{ steps.pull.outputs.pull-request-number }},
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          labels: ['automatic']
+        })
+         
   - name: Slack Success Notification
     id: slack_success
     if: success() && inputs.slack_bot_token && inputs.slack_channel_name
-    uses: slackapi/slack-github-action@v1.19.0
+    uses: slackapi/slack-github-action@v1.23.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
@@ -181,7 +188,7 @@ runs:
   - name: Slack Failure Notification
     id: slack_failure
     if: failure() && inputs.slack_bot_token && inputs.slack_channel_name
-    uses: slackapi/slack-github-action@v1.19.0
+    uses: slackapi/slack-github-action@v1.23.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
