@@ -85,7 +85,7 @@ runs:
     id: outdated
     uses: cafuego/command-output@main
     with:
-      run: composer outdated --all
+      run: composer outdated
     continue-on-error: false
 
   - name: Composer Update
@@ -103,7 +103,7 @@ runs:
       commit-message: "chore: Update all outdated ${{ inputs.patch_packages }} packages."
       title: "Periodic Updates"
       body: |
-        - Automatic pull request after runing composer update ${{ inputs.patch_packages }}.
+        - Automatic pull request after running composer update ${{ inputs.patch_packages }}.
       committer: ${{ inputs.patch_author }}
       author: ${{ inputs.patch_author }}
       branch: update/patch
