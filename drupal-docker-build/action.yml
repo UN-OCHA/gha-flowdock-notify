@@ -143,7 +143,7 @@ runs:
       tags: ${{ inputs.docker_registry_url }}${{ inputs.docker_registry_path }}${{ inputs.docker_image }}:${{ steps.meta.outputs.DOCKER_TAG }}
       secrets: |
           "github_token=${{ inputs.ecr_github_token }}"
-    continue-on-error: true
+    continue-on-error: false
 
   - name: Webhook
     id: webhook
