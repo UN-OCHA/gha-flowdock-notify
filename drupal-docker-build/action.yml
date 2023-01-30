@@ -164,6 +164,7 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
+          "text": "Docker image build ${{ job.status }} for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}",
           "attachments": [
             {
               "color": "#00FF00",
@@ -190,6 +191,7 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
+          "text": "Docker image build failed for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}",
           "attchments": [
             {
               "color": "#FF0000",

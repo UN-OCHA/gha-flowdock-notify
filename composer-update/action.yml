@@ -171,6 +171,7 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
+          "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }}",
           "attachments": [
             {
               "color": "#00FF00",
@@ -197,6 +198,7 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
+          "text": "Failed to apply updates for ${{ github.repository }}",
           "attachments": [
             {
               "color": "#FF0000",
