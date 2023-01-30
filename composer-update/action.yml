@@ -171,14 +171,18 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
-          "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }}",
-          "blocks": [
+          "attachments": [
             {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
-              }
+              "color": "#00FF00",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
+                  }
+                }
+              ]
             }
           ]
         }
@@ -193,14 +197,18 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
-          "text": "Failed to apply updates for ${{ github.repository }}",
-          "blocks": [
+          "attachments": [
             {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "Failed to apply updates for ${{ github.repository }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Review>)"
-              }
+              "color": "#FF0000",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Failed to apply updates for ${{ github.repository }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Review>)"
+                  }
+                }
+              ]
             }
           ]
         }

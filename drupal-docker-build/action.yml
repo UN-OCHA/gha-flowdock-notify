@@ -164,14 +164,18 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
-          "text": "Docker image build ${{ job.status }} for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}",
-          "blocks": [
+          "attachments": [
             {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "Docker image build ${{ job.status }} for `${{ inputs.docker_image }}` image from ${{ github.ref }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Details>)"
-              }
+              "color": "#00FF00",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Docker image build ${{ job.status }} for `${{ inputs.docker_image }}` image from ${{ github.ref }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Details>)"
+                  }
+                }
+              ]
             }
           ]
         }
@@ -186,16 +190,20 @@ runs:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
         {
-          "text": "Docker image build failed for `${{ inputs.docker_image }}` image from ${{ github.ref }} ${{ job.status }}",
-          "blocks": [
+          "attchments": [
             {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "Docker image build failed for `${{ inputs.docker_image }}` image from ${{ github.ref }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Details>)"
-              }
-            }
-          ]
+              "color": "#FF0000",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Docker image build failed for `${{ inputs.docker_image }}` image from ${{ github.ref }} (<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Details>)"
+                  }
+                }
+              ]
+          }
+        ]
         }
     env:
       SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
