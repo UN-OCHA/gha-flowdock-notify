@@ -115,6 +115,7 @@ runs:
 
   - name: Post Comment
     uses: actions/github-script@v6
+    if: ${{ steps.pull.outputs.pull-request-number }}
     env:
       VERSIONS: "software versions\n${{ steps.versions.outputs.stdout }}"
       OUTDATED: "composer outdated\n${{ steps.outdated.outputs.stdout }}"
@@ -165,7 +166,7 @@ runs:
          
   - name: Slack Success Notification
     id: slack_success
-    if: success() && inputs.slack_bot_token && inputs.slack_channel_name
+    if: success() && inputs.slack_bot_token && inputs.slack_channel_name && ${{ steps.pull.outputs.pull-request-number }}
     uses: slackapi/slack-github-action@v1.23.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
@@ -192,7 +193,7 @@ runs:
 
   - name: Slack Failure Notification
     id: slack_failure
-    if: failure() && inputs.slack_bot_token && inputs.slack_channel_name
+    if: failure() && inputs.slack_bot_token && inputs.slack_channel_name && ${{ steps.pull.outputs.pull-request-number }}
     uses: slackapi/slack-github-action@v1.23.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
