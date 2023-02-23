@@ -101,7 +101,7 @@ runs:
     with:
       token: ${{ inputs.github_access_token }}
       commit-message: "chore: Update all outdated ${{ inputs.patch_packages }} packages."
-      title: "Periodic Updates"
+      title: "Automatic Composer Update"
       body: |
         - Automatic pull request after running composer update ${{ inputs.patch_packages }}.
       committer: ${{ inputs.patch_author }}
@@ -115,7 +115,7 @@ runs:
 
   - name: Post Comment
     uses: actions/github-script@v6
-    if: ${{ steps.pull.outputs.pull-request-number }}
+    if: ${{ toJSON(steps.pull.outputs.pull-request-number) != "{}" }}
     env:
       VERSIONS: "software versions\n${{ steps.versions.outputs.stdout }}"
       OUTDATED: "composer outdated\n${{ steps.outdated.outputs.stdout }}"
@@ -166,7 +166,7 @@ runs:
          
   - name: Slack Success Notification
     id: slack_success
-    if: success() && inputs.slack_bot_token && inputs.slack_channel_name && ${{ steps.pull.outputs.pull-request-number }}
+    if: success() && inputs.slack_bot_token && inputs.slack_channel_name && ${{ toJSON(steps.pull.outputs.pull-request-number) != "{}" }}
     uses: slackapi/slack-github-action@v1.23.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
@@ -193,7 +193,7 @@ runs:
 
   - name: Slack Failure Notification
     id: slack_failure
-    if: failure() && inputs.slack_bot_token && inputs.slack_channel_name && ${{ steps.pull.outputs.pull-request-number }}
+    if: failure() && inputs.slack_bot_token && inputs.slack_channel_name }}
     uses: slackapi/slack-github-action@v1.23.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
