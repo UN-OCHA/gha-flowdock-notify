@@ -25,7 +25,7 @@ inputs:
     description: "A comma delimited list of repository maintainers who will be assigned for review."
     required: false
     type: string
-    default: "digital-services-drupal-maintainers"
+    default: "UN-OCHA/digital-services-drupal-maintainers"
   php_version:
     description: "The PHP version to use for all composer commands."
     required: false
