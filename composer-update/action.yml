@@ -52,6 +52,7 @@ runs:
     uses: shivammathur/setup-php@v2
     with:
       php-version: ${{ inputs.php_version }}
+      extensions: gd, mbstring, xmlwriter, dom, curl
       tools: composer
     env:
       fail-fast: true
@@ -73,6 +74,7 @@ runs:
     uses: actions/checkout@v3
     with:
       ref: '${{ inputs.patch_branch }}'
+      token: '${{ inputs.github_access_token }}'
 
   - name: Composer Install
     id: install
@@ -89,7 +91,7 @@ runs:
     continue-on-error: false
 
   - name: Composer Outdated Unocha packages
-    id: outdated
+    id: unocha-outdated
     uses: cafuego/command-output@main
     with:
       run: composer outdated unocha/*
@@ -125,6 +127,7 @@ runs:
     env:
       VERSIONS: "software versions\n${{ steps.versions.outputs.stdout }}"
       OUTDATED: "composer outdated\n${{ steps.outdated.outputs.stdout }}"
+      UNOCHA_OUTDATED: "composer unocha outdated\n${{ steps.unocha-outdated.outputs.stdout }}"
       UPDATES: "composer update\n${{ steps.update.outputs.stdout }}"
       ERRORS: "composer errors\n${{ steps.update.outputs.stderr }}"
     with:
@@ -132,44 +135,49 @@ runs:
       script: |
         const output = `#### Composer Update \`${{ steps.update.outcome }}\`
         #### Running \`composer update --with-all-dependencies ${{ inputs.patch_packages }}\` to update all Drupal core and contrib packages
-        
+
         <details><summary>Software Versions</summary>
-        
+
         \`\`\`${process.env.VERSIONS}\`\`\`
-        
+
         </details>
         <details><summary>Composer Outdated</summary>
-        
+
         \`\`\`${process.env.OUTDATED}\`\`\`
-        
+
+        </details>
+        <details><summary>Composer UNOCHA Outdated</summary>
+
+        \`\`\`${process.env.UNOCHA_OUTDATED}\`\`\`
+
         </details>
         <details><summary>Composer Update Status</summary>
 
         \`\`\`${process.env.UPDATES}\`\`\`
-        
+
         </details>
         <details><summary>Composer Update Messages</summary>
-        
+
         \`\`\`${process.env.ERRORS}\`\`\`
-        
+
         </details>
-        
+
         *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
-        
+
         github.rest.issues.createComment({
           issue_number: ${{ steps.pull.outputs.pull-request-number }},
           owner: context.repo.owner,
           repo: context.repo.repo,
           body: output
         })
-            
+
         github.rest.issues.addLabels({
           issue_number: ${{ steps.pull.outputs.pull-request-number }},
           owner: context.repo.owner,
           repo: context.repo.repo,
           labels: ['automatic']
         })
-         
+
   - name: Slack Success Notification
     id: slack_success
     if: success() && inputs.slack_bot_token && inputs.slack_channel_name
