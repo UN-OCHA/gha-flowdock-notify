@@ -112,24 +112,7 @@ runs:
       commit-message: "chore: Update all outdated ${{ inputs.patch_packages }} packages."
       title: "Automatic Composer Update"
       body: |
-        - Automatic pull request after running composer update ${{ inputs.patch_packages }}.
-      committer: ${{ inputs.patch_author }}
-      author: ${{ inputs.patch_author }}
-      branch: update/patch
-      branch-suffix: short-commit-hash
-      base: ${{ inputs.patch_branch }}
-      assignees: ${{ inputs.patch_maintainers}}
-      reviewers: ${{ inputs.patch_maintainers}}
-    continue-on-error: true
-
-  - name: Create or update comment
-    uses: peter-evans/create-or-update-comment@v2
-    if: steps.pull.outputs.pull-request-number
-    with:
-      token: ${{ inputs.github_access_token }}
-      issue-number: ${{ steps.pull.outputs.pull-request-number }}
-      body: |
-        ### Build output
+        ### Composer Update
         #### Software Versions `${{ steps.versions.outcome }}`
 
         <details><summary>Software Versions</summary>
@@ -159,7 +142,14 @@ runs:
         </details>
 
         *Pusher: @${{ github.actor }}, Action: `${{ github.event_name }}`, Workflow: `${{ github.workflow }}`*
-      edit-mode: append
+      committer: ${{ inputs.patch_author }}
+      author: ${{ inputs.patch_author }}
+      branch: update/patch
+      branch-suffix: short-commit-hash
+      base: ${{ inputs.patch_branch }}
+      assignees: ${{ inputs.patch_maintainers}}
+      reviewers: ${{ inputs.patch_maintainers}}
+    continue-on-error: true
 
   - name: Slack Success Notification
     id: slack_success
