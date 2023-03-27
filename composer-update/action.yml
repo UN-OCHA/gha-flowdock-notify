@@ -48,8 +48,20 @@ runs:
   using: "composite"
   steps:
 
+  - name: Setup PHP with PECL extension locally
+    uses: shivammathur/setup-php@v2
+    if: ${{ env.ACT }}
+    with:
+      php-version: ${{ inputs.php_version }}
+      extensions: gd, mbstring, xmlwriter, dom, curl
+      tools: composer
+    env:
+      fail-fast: true
+      runner: self-hosted
+
   - name: Setup PHP with PECL extension
     uses: shivammathur/setup-php@v2
+    if: ${{ !env.ACT }}
     with:
       php-version: ${{ inputs.php_version }}
       extensions: gd, mbstring, xmlwriter, dom, curl
