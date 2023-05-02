@@ -1,0 +1,44 @@
+name: Validate & Release
+
+on: push
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run lint:md
+
+  release:
+    needs: validate
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: semantic-release
+        if: github.ref == 'refs/heads/master'
+        id: semantic
+        uses: ./
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: test output
+        if: steps.semantic.outputs.new-release-published == 'true'
+        run: |
+          echo "$OUTPUTS"
+          echo "$NEW_RELEASE_PUBLISHED"
+          echo "$RELEASE_MAJOR"
+          echo "$RELEASE_MINOR"
+          echo "$RELEASE_PATH"
+        env:
+          OUTPUTS: ${{ toJson(steps.semantic.outputs) }}

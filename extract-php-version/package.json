@@ -1,0 +1,22 @@
+{
+  "name": "extract-php-version-action",
+  "version": "0.0.5",
+  "description": "GitHub action runs `exctract-php-version`. Exports a variable for you to use in subsequent actions.",
+  "homepage": "https://github.com/UN-OCHA/actions/extract-php-version",
+  "author": {
+    "name": "Peter Lieverdink",
+    "email": "peterl@humanitarianresponse.info",
+    "url": "https://www.unocha.org"
+  },
+  "main": "README.md",
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "fs": "^0.0.1-security"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UN-OCHA/actions/extract-php-version.git"
+  }
+}
