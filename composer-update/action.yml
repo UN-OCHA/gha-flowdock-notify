@@ -47,11 +47,17 @@ inputs:
 runs:
   using: "composite"
   steps:
+  - name: Extract PHP Version
+    id: php
+    uses: docker://ghcr.io/un-ocha/actions:extract-php-version-main
+    with:
+      docker_file: 'docker/Dockerfile'
+      docker_image: 'public.ecr.aws/unocha/php-k8s'
 
   - name: Setup PHP with PECL extension
     uses: shivammathur/setup-php@v2
     with:
-      php-version: ${{ inputs.php_version }}
+      php-version: ${{ steps.php.outputs.php_version }}
       extensions: gd, mbstring, xmlwriter, dom, curl
       tools: composer
     env:
