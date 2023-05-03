@@ -13,4 +13,4 @@ outputs:
   php_version:
     description: "The detected PHP version in MAJOR.MINOR format."
 runs:
-  uses: 'docker://unocha/actions:extract-php-version-main'
+  uses: 'docker://ghcr.io/un-ocha/actions:extract-php-version-main'
