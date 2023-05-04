@@ -26,11 +26,6 @@ inputs:
     required: false
     type: string
     default: "digital-services-drupal-maintainers"
-  php_version:
-    description: "The PHP version to use for all composer commands."
-    required: false
-    type: string
-    default: "8.0"
   slack_bot_token:
     description: "The secret slack authentication token"
     required: false
@@ -47,6 +42,19 @@ inputs:
 runs:
   using: "composite"
   steps:
+  - name: Git work-around
+    id: workaround
+    uses: cafuego/command-output@main
+    with:
+      run: git config --global --add safe.directory ${{ github.workspace }}
+
+  - name: Checkout code
+    id: checkout
+    uses: actions/checkout@v3
+    with:
+      ref: '${{ inputs.patch_branch }}'
+      token: '${{ inputs.github_access_token }}'
+
   - name: Extract PHP Version
     id: php
     uses: docker://ghcr.io/un-ocha/actions:extract-php-version-main
@@ -68,19 +76,6 @@ runs:
     uses: cafuego/command-output@main
     with:
       run: php --version && composer --version
-
-  - name: Git work-around
-    id: workaround
-    uses: cafuego/command-output@main
-    with:
-      run: git config --global --add safe.directory ${{ github.workspace }}
-
-  - name: Checkout code
-    id: checkout
-    uses: actions/checkout@v3
-    with:
-      ref: '${{ inputs.patch_branch }}'
-      token: '${{ inputs.github_access_token }}'
 
   - name: Composer Install
     id: install
