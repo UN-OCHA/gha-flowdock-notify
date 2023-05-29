@@ -26,11 +26,6 @@ inputs:
     required: false
     type: string
     default: "digital-services-drupal-maintainers"
-  php_version:
-    description: "The PHP version to use for all composer commands."
-    required: false
-    type: string
-    default: "8.0"
   slack_bot_token:
     description: "The secret slack authentication token"
     required: false
@@ -47,22 +42,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-
-  - name: Setup PHP with PECL extension
-    uses: shivammathur/setup-php@v2
-    with:
-      php-version: ${{ inputs.php_version }}
-      extensions: gd, mbstring, xmlwriter, dom, curl
-      tools: composer:2.5.5
-    env:
-      fail-fast: true
-
-  - name: Software versions
-    id: versions
-    uses: cafuego/command-output@main
-    with:
-      run: php --version && composer --version
-
   - name: Git work-around
     id: workaround
     uses: cafuego/command-output@main
@@ -75,6 +54,28 @@ runs:
     with:
       ref: '${{ inputs.patch_branch }}'
       token: '${{ inputs.github_access_token }}'
+
+  - name: Extract PHP Version
+    id: php
+    uses: docker://ghcr.io/un-ocha/actions:extract-php-version-main
+    with:
+      docker_file: 'docker/Dockerfile'
+      docker_image: 'public.ecr.aws/unocha/php-k8s'
+
+  - name: Setup PHP with PECL extension
+    uses: shivammathur/setup-php@v2
+    with:
+      php-version: ${{ steps.php.outputs.php_version }}
+      extensions: gd, mbstring, xmlwriter, dom, curl
+      tools: composer:2.5.5
+    env:
+      fail-fast: true
+
+  - name: Software versions
+    id: versions
+    uses: cafuego/command-output@main
+    with:
+      run: php --version && composer --version
 
   - name: Composer Install
     id: install

@@ -1,0 +1,7 @@
+.dockerignore
+.eslintignore
+.github
+.gitignore
+.markdownlint.json
+.prettierignore
+node_modules
