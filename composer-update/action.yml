@@ -67,7 +67,7 @@ runs:
     with:
       php-version: ${{ steps.php.outputs.php_version }}
       extensions: gd, mbstring, xmlwriter, dom, curl
-      tools: composer
+      tools: composer:2.5.5
     env:
       fail-fast: true
 
@@ -138,7 +138,7 @@ runs:
         <code>${{ steps.update.outputs.stdout }}</code>
         </details>
 
-        <details><summary>Composer Update Errors</summary>
+        <details><summary>Composer Update Diagnostic Output</summary>
         <code>${{ steps.update.outputs.stderr }}</code>
         </details>
 
