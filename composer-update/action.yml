@@ -137,7 +137,7 @@ runs:
         <code>${{ steps.update.outputs.stdout }}</code>
         </details>
 
-        <details><summary>Composer Update Errors</summary>
+        <details><summary>Composer Update Diagnostic Output</summary>
         <code>${{ steps.update.outputs.stderr }}</code>
         </details>
 
