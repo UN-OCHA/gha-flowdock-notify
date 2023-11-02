@@ -67,7 +67,7 @@ runs:
     with:
       php-version: ${{ steps.php.outputs.php_version }}
       extensions: gd, mbstring, xmlwriter, dom, curl
-      tools: composer:2.5.5
+      tools: composer
     env:
       fail-fast: true
 
