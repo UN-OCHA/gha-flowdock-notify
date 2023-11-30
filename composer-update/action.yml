@@ -119,12 +119,6 @@ runs:
         <code>${{ steps.outdated.outputs.stdout }}</code>
         </details>
 
-        #### Composer UN-OCHA Outdated `${{ steps.unocha-outdated.outcome }}`
-
-        <details><summary>Composer UN-OCHA Outdated</summary>
-        <code>${{ steps.unocha-outdated.outputs.stdout }}</code>
-        </details>
-
         #### Composer Update `${{ steps.update.outcome }}`
 
         <details><summary>Composer Update Output</summary>
