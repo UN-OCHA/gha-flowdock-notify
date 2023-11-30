@@ -81,7 +81,7 @@ runs:
     id: install
     uses: cafuego/command-output@main
     with:
-      run: composer install
+      run: composer install --no-scripts
     continue-on-error: true
 
   - name: Composer Outdated
