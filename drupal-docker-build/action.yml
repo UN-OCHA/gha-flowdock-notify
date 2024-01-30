@@ -32,7 +32,7 @@ inputs:
     required: true
     type: string
   docker_file:
-    description: "The (relative) path to the Dockerfile to sue for the build"
+    description: "The (relative) path to the Dockerfile to use for the build"
     required: false
     default: 'docker/Dockerfile'
     type: string
