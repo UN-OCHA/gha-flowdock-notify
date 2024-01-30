@@ -50,7 +50,7 @@ runs:
 
   - name: Checkout code
     id: checkout
-    uses: actions/checkout@v3
+    uses: actions/checkout@v4
     with:
       ref: '${{ inputs.patch_branch }}'
       token: '${{ inputs.github_access_token }}'
