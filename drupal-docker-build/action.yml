@@ -32,7 +32,7 @@ inputs:
     required: true
     type: string
   docker_file:
-    description: "The (relative) path to the Dockerfile to sue for the build"
+    description: "The (relative) path to the Dockerfile to use for the build"
     required: false
     default: 'docker/Dockerfile'
     type: string
@@ -74,7 +74,7 @@ runs:
   - name: Configure AWS Credentials
     id: aws
     if: ${{ inputs.ECR_AWS_ACCESS_KEY_ID }}
-    uses: aws-actions/configure-aws-credentials@v1
+    uses: aws-actions/configure-aws-credentials@v4
     with:
       aws-access-key-id: ${{ inputs.aws_access_key_id }}
       aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
@@ -87,7 +87,7 @@ runs:
   - name: Login to Public ECR
     id: login-public
     if: inputs.docker_username
-    uses: docker/login-action@v2.1.0
+    uses: docker/login-action@v3
     with:
       registry: public.ecr.aws
       username: ${{ inputs.docker_username }}
@@ -98,7 +98,7 @@ runs:
   - name: Login to Private ECR
     id: login-private
     if: endsWith(inputs.docker_registry_url, '.amazonaws.com') && inputs.docker_username
-    uses: docker/login-action@v2.1.0
+    uses: docker/login-action@v3
     with:
       registry: ${{ inputs.docker_registry_url }}
       username: ${{ inputs.docker_username }}
@@ -122,7 +122,7 @@ runs:
 
   - name: Build docker image
     id: build
-    uses: docker/build-push-action@v3.2.0
+    uses: docker/build-push-action@v5
     with:
       build-args: |
         BRANCH_ENVIRONMENT=${BRANCH_ENVIRONMENT}
@@ -159,7 +159,7 @@ runs:
   - name: Slack Notification
     id: slack_success
     if: success() && inputs.slack_bot_token && inputs.slack_channel_name
-    uses: slackapi/slack-github-action@v1.23.0
+    uses: slackapi/slack-github-action@v1.25.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
@@ -186,7 +186,7 @@ runs:
   - name: Slack Notification
     id: slack_failure
     if: failure() && inputs.slack_bot_token && inputs.slack_channel_name
-    uses: slackapi/slack-github-action@v1.23.0
+    uses: slackapi/slack-github-action@v1.25.0
     with:
       channel-id: '${{ inputs.slack_channel_name }}'
       payload: |
