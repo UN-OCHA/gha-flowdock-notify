@@ -100,7 +100,7 @@ runs:
 
   - name: Create Pull Request
     id: pull
-    uses: peter-evans/create-pull-request@v4
+    uses: peter-evans/create-pull-request@v6
     with:
       token: ${{ inputs.github_access_token }}
       commit-message: "chore: Update all outdated ${{ inputs.patch_packages }} packages."
