@@ -108,7 +108,7 @@ runs:
     id: run-lock-diff
     uses: cafuego/command-output@main
     with:
-      run: ~/.composer/vendor/bin/composer-lock-diff --md | sed -z 's/\n/\\n/g'
+      run: ~/.composer/vendor/bin/composer-lock-diff --md
     continue-on-error: true
 
   - name: Create Pull Request
