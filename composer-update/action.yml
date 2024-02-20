@@ -111,6 +111,13 @@ runs:
       run: ~/.composer/vendor/bin/composer-lock-diff --md
     continue-on-error: true
 
+  - name: Run lock-diff in TXT mode
+    id: run-lock-diff-txt
+    uses: cafuego/command-output@main
+    with:
+      run: ~/.composer/vendor/bin/composer-lock-diff
+    continue-on-error: true
+
   - name: Create Pull Request
     id: pull
     uses: peter-evans/create-pull-request@v4
@@ -173,13 +180,20 @@ runs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "${{ steps.run-lock-diff.outputs.stdout }}"
+                  },
+                  "accessory": {
+                    "type": "overflow",
+                    "options": [
+                      {
+                        "text": {
+                          "type": "mrkdwn",
+                          "text": "```${{ steps.run-lock-diff-txt.outputs.stdout }}```",
+                          "emoji": false
+                        },
+                        "value": "value-0"
+                      }
+                    ],
+                    "action-id": "overflow-action"
                   }
                 }
               ]
