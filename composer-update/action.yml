@@ -100,7 +100,9 @@ runs:
 
   - name: Install lock-diff
     id: install-lock-diff
+    shell: bash
     run: composer global require davidrjonas/composer-lock-diff:^1.0
+    continue-on-error: true
 
   - name: Run lock-diff
     id: run-lock-diff
