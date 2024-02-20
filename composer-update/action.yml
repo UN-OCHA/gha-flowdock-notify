@@ -111,13 +111,6 @@ runs:
       run: ~/.composer/vendor/bin/composer-lock-diff --md
     continue-on-error: true
 
-  - name: Run lock-diff in TXT mode
-    id: run-lock-diff-txt
-    uses: cafuego/command-output@main
-    with:
-      run: ~/.composer/vendor/bin/composer-lock-diff --pretty | sed -z 's/\n/\\n/g'
-    continue-on-error: true
-
   - name: Create Pull Request
     id: pull
     uses: peter-evans/create-pull-request@v4
