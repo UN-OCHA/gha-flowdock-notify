@@ -98,6 +98,19 @@ runs:
       run: composer update --with-all-dependencies ${{ inputs.patch_packages }} --no-scripts
     continue-on-error: false
 
+  - name: Install lock-diff
+    id: install-lock-diff
+    shell: bash
+    run: composer global require davidrjonas/composer-lock-diff:^1.0
+    continue-on-error: true
+
+  - name: Run lock-diff
+    id: run-lock-diff
+    uses: cafuego/command-output@main
+    with:
+      run: ~/.composer/vendor/bin/composer-lock-diff --md
+    continue-on-error: true
+
   - name: Create Pull Request
     id: pull
     uses: peter-evans/create-pull-request@v6
@@ -107,6 +120,9 @@ runs:
       title: "Automatic Composer Update"
       body: |
         ### Composer Update
+
+        ${{ steps.run-lock-diff.outputs.stdout }}
+
         #### Software Versions `${{ steps.versions.outcome }}`
 
         <details><summary>Software Versions</summary>
