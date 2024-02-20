@@ -180,20 +180,6 @@ runs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "Created an up to date pull request for ${{ github.repository }} from ${{ github.ref }} ${{ job.status }} (<${{ steps.pull.outputs.pull-request-url }}|Review>)"
-                  },
-                  "accessory": {
-                    "type": "overflow",
-                    "options": [
-                      {
-                        "text": {
-                          "type": "plain_text",
-                          "text": "${{ steps.run-lock-diff-txt.outputs.stdout }}",
-                          "emoji": false
-                        },
-                        "value": "value-0"
-                      }
-                    ],
-                    "action-id": "overflow-action"
                   }
                 }
               ]
