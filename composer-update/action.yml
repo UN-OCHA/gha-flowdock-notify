@@ -186,8 +186,8 @@ runs:
                     "options": [
                       {
                         "text": {
-                          "type": "mrkdwn",
-                          "text": "```${{ steps.run-lock-diff-txt.outputs.stdout }}```",
+                          "type": "plain_text",
+                          "text": "${{ steps.run-lock-diff-txt.outputs.stdout }}",
                           "emoji": false
                         },
                         "value": "value-0"
