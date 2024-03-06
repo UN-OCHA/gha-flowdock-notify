@@ -14,7 +14,7 @@ inputs:
   patch_packages:
     description: "The package(s) to check for updates."
     required: false
-    default: "drupal/*"
+    default: "drupal/* unocha/*"
     type: string
   patch_author:
     description: "A git identifier for the author of the patch that is to be created."
