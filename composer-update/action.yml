@@ -142,7 +142,7 @@ runs:
       fail-fast: true
 
   - name: Setup Environment
-    id: docker
+    id: setup-environment
     if: contains(${{ inputs.patch_packages }}, 'drupal')
     uses: cafuego/command-output@main
     with:
@@ -155,7 +155,7 @@ runs:
       fail-fast: true
 
   - name: Install Environment
-    id: install
+    id: install-environment
     if: contains(${{ inputs.patch_packages }}, 'drupal')
     uses: cafuego/command-output@main
     with:
@@ -165,7 +165,7 @@ runs:
       fail-fast: true
 
   - name: Run updates and export config
-    id: tests
+    id: export-config
     if: contains(${{ inputs.patch_packages }}, 'drupal')
     uses: cafuego/command-output@main
     with:
