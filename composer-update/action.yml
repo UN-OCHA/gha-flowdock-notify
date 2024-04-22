@@ -166,7 +166,7 @@ runs:
 
   - name: Run updates and export config
     id: export-config
-    if: contains(${{ inputs.patch_packages }}, 'drupal')
+    if: contains("${{ inputs.patch_packages }}", 'drupal')
     uses: cafuego/command-output@main
     with:
       run: |
