@@ -172,7 +172,7 @@ runs:
       run: |
         docker compose -f tests/docker-compose.yml exec -T drupal drush -y updatedb
         docker compose -f tests/docker-compose.yml exec -T drupal drush cache:rebuild
-        docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:export
+        docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:export --destination /srv/www/config
     env:
       fail-fast: true
 
