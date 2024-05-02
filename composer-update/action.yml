@@ -68,6 +68,13 @@ runs:
       ref: '${{ inputs.patch_branch }}'
       token: '${{ inputs.github_access_token }}'
 
+  - name: Check Issues
+    id: issues
+    if: contains(${{ inputs.patch_packages }}, 'drupal')
+    uses: cafuego/command-output@main
+    with:
+      run: grep -r '@see https://www.drupal.org/ ' html/modules/custom/ html/themes/custom/ | awk '{ gsub("html/modules/custom//", "", $1); file=$1; gsub(":", "", file) } { printf("%-52s (%s)\n", $NF, file) }'
+
   - name: Extract PHP Version
     id: php
     uses: docker://ghcr.io/un-ocha/actions:extract-php-version-main
@@ -201,6 +208,12 @@ runs:
         ### Composer Update
 
         ${{ steps.run-lock-diff.outputs.stdout }}
+
+        #### Drupal Core Issues `${{ steps.issues.outcome }}`
+
+        <details><summary>Core Issues</summary>
+        <code>${{ steps.issues.outputs.stdout }}</code>
+        </details>
 
         #### Software Versions `${{ steps.versions.outcome }}`
 
