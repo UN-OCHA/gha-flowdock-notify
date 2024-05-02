@@ -74,8 +74,7 @@ runs:
     uses: cafuego/command-output@main
     with:
       run: |
-        ls -la
-        grep -r '@see https://www.drupal.org/' html/modules/custom/ | awk '{ gsub("html/modules/custom//", "", $1); file=$1; gsub(":", "", file) } { printf("%-52s (%s)\n", $NF, file) }'
+        grep -r '@see https://www.drupal.org/' html/modules/custom/ | awk '{ gsub("html/modules/custom//", "", \\$1); file=$1; gsub(":", "", file) } { printf("%-52s (%s)\n", \\$NF, file) }'
 
   - name: Extract PHP Version
     id: php
