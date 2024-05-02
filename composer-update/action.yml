@@ -73,7 +73,9 @@ runs:
     if: contains(${{ inputs.patch_packages }}, 'drupal')
     uses: cafuego/command-output@main
     with:
-      run: grep -r '@see https://www.drupal.org/ ' html/modules/custom/ html/themes/custom/ | awk '{ gsub("html/modules/custom//", "", $1); file=$1; gsub(":", "", file) } { printf("%-52s (%s)\n", $NF, file) }'
+      run: |
+        ls -la
+        grep -r '@see https://www.drupal.org/' html/modules/custom/ | awk '{ gsub("html/modules/custom//", "", $1); file=$1; gsub(":", "", file) } { printf("%-52s (%s)\n", \$NF, file) }'
 
   - name: Extract PHP Version
     id: php
