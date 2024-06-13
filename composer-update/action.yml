@@ -47,10 +47,6 @@ inputs:
     description: "The slack channel to send the message to"
     required: false
     type: string
-  flowdock_token:
-    description: "The flowdock token. This is ignored."
-    required: false
-    type: string
 
 runs:
   using: "composite"
@@ -166,14 +162,15 @@ runs:
 
   - name: Run updates and export config
     id: export-config
-    if: contains("${{ inputs.patch_packages }}", 'drupal')
+    if: contains(${{ inputs.patch_packages }}, 'drupal')
     uses: cafuego/command-output@main
     with:
       run: |
         docker compose -f tests/docker-compose.yml exec -T drupal drush -y updatedb
         docker compose -f tests/docker-compose.yml exec -T drupal drush cache:rebuild
-        # docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:export --destination /srv/www/config
-        # docker-compose -f tests/docker-compose.yml exec -T drupal chmod -R a+rX /srv/www/config
+        docker-compose -f tests/docker-compose.yml exec -T drupal ls -l /srv/www/config
+        docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:export --destination /srv/www/config
+        docker-compose -f tests/docker-compose.yml exec -T drupal ls -l /srv/www/config
     env:
       fail-fast: true
 
