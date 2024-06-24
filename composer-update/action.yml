@@ -167,7 +167,7 @@ runs:
     with:
       run: |
         # docker compose -f tests/docker-compose.yml exec -T drupal /bin/bash -c "drush -y cset system.site uuid $(grep uuid /srv/www/config/system.site.yml | awk '{print $2}')"
-        docker compose -f tests/docker-compose.yml exec -T drupal /bin/bash -c "drush -y cset system.site uuid $(docker compose -f tests/docker-compose.yml exec -T drupal drush config-get system.site uuid | awk '{print $2}')"
+        # docker compose -f tests/docker-compose.yml exec -T drupal /bin/bash -c "drush -y cset system.site uuid $(docker compose -f tests/docker-compose.yml exec -T drupal drush config-get system.site uuid | awk '{print $2}')"
         docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:import --source /srv/www/config
         docker compose -f tests/docker-compose.yml exec -T drupal drush -y updatedb
         docker compose -f tests/docker-compose.yml exec -T drupal drush cache:rebuild
