@@ -158,7 +158,7 @@ runs:
       run: |
         docker compose -f tests/docker-compose.yml exec -T drupal drush -y si minimal --existing-config --verbose
     env:
-      fail-fast: true
+      fail-fast: false
 
   - name: Run updates and export config
     id: export-config
