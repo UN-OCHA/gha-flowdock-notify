@@ -156,7 +156,7 @@ runs:
     uses: cafuego/command-output@main
     with:
       run: |
-        docker compose -f tests/docker-compose.yml exec -T drupal drush -y si minimal --existing-config --verbose install_configure_form.enable_update_status_emails=NULL
+        docker compose -f tests/docker-compose.yml exec -T drupal drush -y si minimal --existing-config --verbose
     env:
       fail-fast: true
 
