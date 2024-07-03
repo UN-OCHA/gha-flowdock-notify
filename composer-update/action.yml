@@ -29,6 +29,10 @@ inputs:
     required: false
     default: "drupal/* unocha/* drush/*"
     type: string
+  patch_updates:
+    description: "A flag that specifies whether to run updates and generate updated Drupal config."
+    default: true
+    type: boolean
   patch_author:
     description: "A git identifier for the author of the patch that is to be created."
     required: false
@@ -162,7 +166,7 @@ runs:
 
   - name: Run updates and export config
     id: export-config
-    if: contains(${{ inputs.patch_packages }}, 'drupal')
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (patch_updates == true)
     uses: cafuego/command-output@main
     with:
       run: |
