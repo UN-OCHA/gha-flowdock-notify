@@ -31,8 +31,9 @@ inputs:
     type: string
   patch_config:
     description: "A flag that specifies whether to run updates and generate updated Drupal config."
-    default: "true"
+    required: false
     type: string
+    default: "true"
   patch_author:
     description: "A git identifier for the author of the patch that is to be created."
     required: false
@@ -133,7 +134,7 @@ runs:
 
   - name: Build Image
     id: build
-    if: contains(${{ inputs.patch_packages }}, 'drupal') && (inputs.patch_config == true)
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
     uses: cafuego/command-output@main
     with:
       run: |
@@ -143,7 +144,7 @@ runs:
 
   - name: Setup Environment
     id: setup-environment
-    if: contains(${{ inputs.patch_packages }}, 'drupal') && (inputs.patch_config == 'true')
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
     uses: cafuego/command-output@main
     with:
       run: |
@@ -156,7 +157,7 @@ runs:
 
   - name: Install Environment
     id: install-environment
-    if: contains(${{ inputs.patch_packages }}, 'drupal') && (inputs.patch_config == 'true')
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
     uses: cafuego/command-output@main
     with:
       run: |
@@ -166,7 +167,7 @@ runs:
 
   - name: Run updates and export config
     id: export-config
-    if: contains(${{ inputs.patch_packages }}, 'drupal') && (inputs.patch_config == 'true')
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
     uses: cafuego/command-output@main
     with:
       run: |
