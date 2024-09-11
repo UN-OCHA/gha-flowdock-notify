@@ -2,6 +2,19 @@ name: "Composer Update Workflow"
 description: "Updates all specified composer packages and creates a pull request with the changes."
 
 inputs:
+  aws_access_key_id:
+    description: "An Amazon IAM access key"
+    required: true
+    type: string
+  aws_secret_access_key:
+    description: "An Amazon IAM access secret"
+    required: true
+    type: string
+  aws_region:
+    description: "An Amazon region code for accessing ECR."
+    required: false
+    type: string
+    default: "us-east-1"
   github_access_token:
     description: "A GitHub personal access token."
     required: true
@@ -16,6 +29,11 @@ inputs:
     required: false
     default: "drupal/* unocha/* drush/*"
     type: string
+  patch_config:
+    description: "A flag that specifies whether to run updates and generate updated Drupal config."
+    required: false
+    type: string
+    default: "true"
   patch_author:
     description: "A git identifier for the author of the patch that is to be created."
     required: false
@@ -32,10 +50,6 @@ inputs:
     type: string
   slack_channel_name:
     description: "The slack channel to send the message to"
-    required: false
-    type: string
-  flowdock_token:
-    description: "The flowdock token. This is ignored."
     required: false
     type: string
 
@@ -77,6 +91,26 @@ runs:
     with:
       run: php --version && composer --version
 
+  - name: Configure AWS Credentials
+    id: aws
+    if: contains(${{ inputs.patch_packages }}, 'drupal')
+    uses: aws-actions/configure-aws-credentials@v4
+    with:
+      aws-access-key-id: ${{ inputs.aws_access_key_id }}
+      aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+      aws-region: ${{ inputs.aws_region }}
+
+  - name: Login to Public ECR
+    id: aws-login
+    if: contains(${{ inputs.patch_packages }}, 'drupal')
+    uses: docker/login-action@v3.0.0
+    with:
+      registry: public.ecr.aws
+      username: ${{ inputs.aws_access_key_id }}
+      password: ${{ inputs.aws_secret_access_key }}
+    env:
+      AWS_REGION: us-east-1
+
   - name: Composer Install
     id: install
     uses: cafuego/command-output@main
@@ -97,6 +131,52 @@ runs:
     with:
       run: composer update --with-all-dependencies ${{ inputs.patch_packages }} --no-scripts
     continue-on-error: false
+
+  - name: Build Image
+    id: build
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
+    uses: cafuego/command-output@main
+    with:
+      run: |
+        make
+    env:
+      fail-fast: true
+
+  - name: Setup Environment
+    id: setup-environment
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
+    uses: cafuego/command-output@main
+    with:
+      run: |
+        docker compose -f tests/docker-compose.yml up -d
+        sleep 10
+        docker ps -a
+        docker compose -f tests/docker-compose.yml exec -w /srv/www -T drupal composer install
+    env:
+      fail-fast: true
+
+  - name: Install Environment
+    id: install-environment
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
+    uses: cafuego/command-output@main
+    with:
+      run: |
+        docker compose -f tests/docker-compose.yml exec -T drupal drush -y si minimal --existing-config --verbose
+    env:
+      fail-fast: true
+
+  - name: Run updates and export config
+    id: export-config
+    if: contains(${{ inputs.patch_packages }}, 'drupal') && (${{ inputs.patch_config }} == 'true')
+    uses: cafuego/command-output@main
+    with:
+      run: |
+        docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:import --source /srv/www/config
+        docker compose -f tests/docker-compose.yml exec -T drupal drush -y updatedb
+        docker compose -f tests/docker-compose.yml exec -T drupal drush cache:rebuild
+        docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:export --destination /srv/www/config
+    env:
+      fail-fast: true
 
   - name: Install lock-diff
     id: install-lock-diff
