@@ -134,7 +134,7 @@ runs:
 
   - name: Build Image
     id: build
-    if: ${{ inputs.patch_config }} == 'true' && contains(${{ inputs.patch_packages }}, 'drupal')
+    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
     uses: cafuego/command-output@main
     with:
       run: |
@@ -144,7 +144,7 @@ runs:
 
   - name: Setup Environment
     id: setup-environment
-    if: ${{ inputs.patch_config }} == 'true' && contains(${{ inputs.patch_packages }}, 'drupal')
+    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
     uses: cafuego/command-output@main
     with:
       run: |
@@ -157,7 +157,7 @@ runs:
 
   - name: Install Environment
     id: install-environment
-    if: ${{ inputs.patch_config }} == 'true' && contains(${{ inputs.patch_packages }}, 'drupal')
+    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
     uses: cafuego/command-output@main
     with:
       run: |
@@ -167,7 +167,7 @@ runs:
 
   - name: Run updates and export config
     id: export-config
-    if: ${{ inputs.patch_config }} == 'true' && contains(${{ inputs.patch_packages }}, 'drupal')
+    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
     uses: cafuego/command-output@main
     with:
       run: |
