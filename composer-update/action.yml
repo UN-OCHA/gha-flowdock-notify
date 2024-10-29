@@ -53,8 +53,9 @@ inputs:
     required: false
     type: string
   source_directory:
-    description: "he source directory under which to look for (custom) code."
-    required: true
+    description: "The source directory under which to look for (custom) code."
+    required: false
+    default: "html/modules/custom"
     type: string
 
 runs:
@@ -215,15 +216,15 @@ runs:
 
         ${{ steps.run-lock-diff.outputs.stdout }}
 
+        #### Potential Issues
+
+        ${{ steps.issues.outputs.drupal_issues }}
+
         #### Software Versions `${{ steps.versions.outcome }}`
 
         <details><summary>Software Versions</summary>
         <code>${{ steps.versions.outputs.stdout }}</code>
         </details>
-
-        ### Potential Issues
-
-        ${{ steps.issues.outputs.drupal_issues }}
 
         #### Composer Outdated `${{ steps.outdated.outcome }}`
 
