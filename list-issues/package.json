@@ -1,9 +1,9 @@
 {
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "dependencies": {
-    "fs": "^0.0.1-security",
-    "re2": "^1.21.4",
-    "url-regex-safe": "^4.0.0"
+    "@actions/core": "^1.11.1",
+    "axios": "^1.7.7",
+    "fs": "^0.0.1-security"
   }
 }
