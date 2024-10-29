@@ -141,7 +141,8 @@ runs:
     if: contains(${{ inputs.patch_packages }}, 'drupal')
     uses: docker://ghcr.io/un-ocha/actions:drupal-issues-dev
     with:
-      source_direcrtory: ${{ inputs.source_directory }}
+      source_directory: ${{ inputs.source_directory }}
+    continue-on-error: true
 
   - name: Build Image
     id: build
