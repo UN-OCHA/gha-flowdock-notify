@@ -1,0 +1,23 @@
+{
+  "name": "drupal-issues",
+  "version": "0.0.1",
+  "description": "GitHub action runs `drupal-issues`. Returns an output variable that contains lists to issues mentioned in the specified code directory.",
+  "homepage": "https://github.com/UN-OCHA/actions-drupal-issues",
+  "author": {
+    "name": "Peter Lieverdink",
+    "email": "lieverdink@reliefweb.int",
+    "url": "https://www.unocha.org"
+  },
+  "main": "README.md",
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "axios": "^1.7.7",
+    "fs": "^0.0.1-security"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UN-OCHA/actions/drupal-issues.git"
+  }
+}
