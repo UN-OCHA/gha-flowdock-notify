@@ -107,7 +107,7 @@ async function run() {
           result += '[' + count + ']' + link + ' ';
           count++;
         }
-        result += '\n';
+        result += '|\n';
       }
     } else {
       for (const node of response.data.list) {
