@@ -3,7 +3,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import axios from 'axios';
 
 // const regex = `@see (?<link>(?:(?:[a-z]+:)?//)(?:www\\.drupal\\.org)(?:(?:[/?#][^\\s"]*[^\\s".?!])|[/])?)`;
-const regex = `@see (?<link>(?:(?:[a-z]+:)?//)(?:www\\.drupal\\.org)/project/[^\\s"]*/issues/(?<issue>[^\\s".?!]*)?)`;
+// const regex = `@see (?<link>(?:(?:[a-z]+:)?//)(?:www\\.drupal\\.org)/project/[^\\s"]*/issues/(?<issue>[^\\s".?!]*)?)`;
+const regex = `(?<link>(?:(?:[a-z]+:)?//)(?:(www\\.)?drupal\\.org)/(node|project/[^\\s"]*/issues)/(?<issue>[^\\s".?!]*)?)`;
 
 // @see https://www.drupal.org/drupalorg/docs/apis/rest-and-other-apis
 const issue_statuses = {
@@ -28,27 +29,32 @@ const issue_statuses = {
  * Run drupal-issues.
  */
 async function run() {
-  const dir = core.getInput('source_directory', { required: true });
+  const dirs = core.getInput('source_directory', { required: true });
 
   // A temp list of all files.
   let fileList = [];
 
-  try {
-    fileList = await readdir(dir, { recursive: true, withFileTypes: true });
-  } catch (err) {
-    console.error(err);
+  for (const dir of dirs.split(/,/)) {
+    try {
+      let files = await readdir(dir, { recursive: true, withFileTypes: true });
+      fileList = fileList.concat(files);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  var issues = new Array(0);
-  var output = new Array(0);
+  var issues = new Object();
   let result = '';
+
+  // Assemble a github file link prefix if we're running on github.
+  const github_link_prefix = process.env['GITHUB_SERVER_URL'] + '/' + process.env['GITHUB_REPOSITORY'] + '/blob/' + process.env['GITHUB_REF_NAME'] + '/';
 
   // Read each file in files and look for lines matching regex.
   for (const dirent of fileList) {
     // Are you a file?
     if (dirent.isFile()) {
       let filePath = dirent.parentPath + '/' + dirent.name;
-      let contents;
+      var contents = '';
 
       try {
         contents = await readFile(filePath, { encoding: 'utf8' });
@@ -56,28 +62,43 @@ async function run() {
         console.error(err.message);
       }
 
+      // Need a line counter, so we can make links.
+      var count = 1;
       for (const line of contents.split(/\n/)) {
-        const matches = line.match(regex);
+        let matches = line.match(regex);
         if (matches != null) {
-          issues.push(matches.groups.issue);
-        }
-      } // for line
+          let node = matches.groups.issue;
+          let fileLink = '[' + filePath + ':' + count + '](' + github_link_prefix + filePath + '#L' + count + ')';
 
-      if (issues.length) {
-        output.push({ file: dirent.name, path: filePath, issues: issues});
-      }
+          // Ensure we do not overwrite the issue if it is referenced in multiple files.
+          if (issues[node] != null) {
+            issues[node].files.push(fileLink);
+          } else {
+            issues[node] = {link: matches.groups.link, files: [fileLink]};
+          }
+        }
+        count++;
+      } // for line
     }
   } // for fileList
 
-  // Hit up drupal.org for a summary of all these issues.
-  // The assumptioon here is that we found 100 or less :-)
-  try {
-    const response = await axios.get('https://www.drupal.org/api-d7/node.json', { params: { nid: issues, sort: 'field_issue_status', direction: 'ASC' } });
-    for (const node of response.data.list) {
-      result += '* [' + node.title + '](' + node.url + '): ' + issue_statuses[node.field_issue_status] + '\n';
+  // Assemble a list of node IDs for the API call.
+  let nids = Object.keys(issues);
+
+  if (nids != null) {
+    // Hit up drupal.org for a summary of all these issues.
+    // The assumptioon here is that we found 100 or less :-)
+    try {
+      const response = await axios.get('https://www.drupal.org/api-d7/node.json', { params: { nid: nids, sort: 'field_issue_status', direction: 'ASC' } });
+      for (const node of response.data.list) {
+        result += '[' + node.title + '](' + node.url + '): ' + issue_statuses[node.field_issue_status] + '\n';
+        result += ' * ' + issues[node.nid].files.join('\n * ') + '\n\n';
+      }
+    } catch (err) {
+      console.error(err.message);
     }
-  } catch (err) {
-    console.error(err.message);
+  } else {
+    result = '\n* No issues.\n';
   }
 
   core.exportVariable('DRUPAL_ISSUES', result);

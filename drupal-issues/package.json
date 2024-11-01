@@ -1,5 +1,6 @@
 {
   "name": "drupal-issues",
+  "type": "module",
   "version": "0.0.1",
   "description": "GitHub action runs `drupal-issues`. Returns an output variable that contains lists to issues mentioned in the specified code directory.",
   "homepage": "https://github.com/UN-OCHA/actions-drupal-issues",

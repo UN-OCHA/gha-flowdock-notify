@@ -6,7 +6,7 @@ branding:
   color: 'blue'
 inputs:
   source_directory:
-    description: 'The source directory under which to look for (custom) code.'
+    description: 'A source directory or comma delimited list of source directories (relative to the repository root) under which to look for code.'
     required: true
 outputs:
   drupal_issues:
