@@ -30,6 +30,7 @@ const issue_statuses = {
  */
 async function run() {
   const dirs = core.getInput('source_directory', { required: true });
+  const format = core.getInput('output_format', { required: false });
 
   // A temp list of all files.
   let fileList = [];
@@ -86,16 +87,33 @@ async function run() {
   let nids = Object.keys(issues);
 
   if (nids != null) {
-    // Hit up drupal.org for a summary of all these issues.
-    // The assumptioon here is that we found 100 or less :-)
+    var response;
+    // Fetch all issue data.
     try {
-      const response = await axios.get('https://www.drupal.org/api-d7/node.json', { params: { nid: nids, sort: 'field_issue_status', direction: 'ASC' } });
+      response = await axios.get('https://www.drupal.org/api-d7/node.json', { params: { nid: nids, sort: 'field_issue_status', direction: 'ASC' } });
+    } catch (err) {
+      console.error(err.message);
+    }
+
+    // How do we output?
+    if (format == 'table') {
+      result = '| Issue | Status | Mentions |\n';
+      result += '|-------|--------|----------|\n';
+      for (const node of response.data.list) {
+        result += '| ' + node.title + '](' + node.url + ') | ' + issue_statuses[node.field_issue_status] + ' | ';
+        var count = 1;
+        for (const item of issues[node.nid].files) {
+          let link = item.replace(/\[.*\]/, '');
+          result += '[' + count + ']' + link + ' ';
+          count++;
+        }
+        result += '\n';
+      }
+    } else {
       for (const node of response.data.list) {
         result += '[' + node.title + '](' + node.url + '): ' + issue_statuses[node.field_issue_status] + '\n';
         result += ' * ' + issues[node.nid].files.join('\n * ') + '\n\n';
       }
-    } catch (err) {
-      console.error(err.message);
     }
   } else {
     result = '\n* No issues.\n';

@@ -13,12 +13,13 @@ steps:
 - uses: actions/checkout@master
 - uses: UN-OCHA/actions/drupal-issues-main
   with:
-    source_directory: docroot/modules/custom
+    source_directory: docroot/modules/custom,docroot,themes,custom
 ```
 
 ## Arguments
 
-`source_directory` : specifies the directory relative to the repository root in which the action will look for Drupal issue links.
+`source_directory` : specifies a comma delimited list of directories relative to the repository root in which the action will look for Drupal issue links.
+`output_format`: specifies the markdown snippet. Can be `table` for a formatted table or anyhting else for a list.
 
 ## Output
 
