@@ -57,6 +57,11 @@ inputs:
     required: false
     default: "html/modules/custom"
     type: string
+  output_format:
+    description: "The format out the issues list markdown."
+    required: false
+    default: "list"
+    type: string
 
 runs:
   using: "composite"
@@ -143,6 +148,7 @@ runs:
     uses: docker://ghcr.io/un-ocha/actions:drupal-issues-dev
     with:
       source_directory: ${{ inputs.source_directory }}
+      output_format: ${{ inputs.output_format }}
     continue-on-error: true
 
   - name: Build Image
