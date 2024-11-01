@@ -100,7 +100,7 @@ async function run() {
       result = '| Issue | Status | Mentions |\n';
       result += '|-------|--------|----------|\n';
       for (const node of response.data.list) {
-        result += '| ' + node.title + '](' + node.url + ') | ' + issue_statuses[node.field_issue_status] + ' | ';
+        result += '| [' + node.title + '](' + node.url + ') | ' + issue_statuses[node.field_issue_status] + ' | ';
         var count = 1;
         for (const item of issues[node.nid].files) {
           let link = item.replace(/\[.*\]/, '');
