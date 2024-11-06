@@ -34,7 +34,6 @@ async function run() {
 
   // A temp list of all files.
   let fileList = [];
-
   for (const dir of dirs.split(/,/)) {
     try {
       let files = await readdir(dir, { recursive: true, withFileTypes: true });
@@ -49,7 +48,6 @@ async function run() {
 
   // Assemble a github file link prefix if we're running on github.
   const github_link_prefix = process.env['GITHUB_SERVER_URL'] + '/' + process.env['GITHUB_REPOSITORY'] + '/blob/' + process.env['GITHUB_REF_NAME'] + '/';
-
   // Read each file in files and look for lines matching regex.
   for (const dirent of fileList) {
     // Are you a file?

@@ -52,6 +52,16 @@ inputs:
     description: "The slack channel to send the message to"
     required: false
     type: string
+  source_directory:
+    description: "The source directory under which to look for (custom) code."
+    required: false
+    default: "html/modules/custom"
+    type: string
+  output_format:
+    description: "The format out the issues list markdown."
+    required: false
+    default: "list"
+    type: string
 
 runs:
   using: "composite"
@@ -132,6 +142,15 @@ runs:
       run: composer outdated --direct --no-scripts
     continue-on-error: false
 
+  - name: Check Drupal Issues
+    id: issues
+    if: contains(${{ inputs.patch_packages }}, 'drupal')
+    uses: docker://ghcr.io/un-ocha/actions:drupal-issues-main
+    with:
+      source_directory: ${{ inputs.source_directory }}
+      output_format: ${{ inputs.output_format }}
+    continue-on-error: true
+
   - name: Build Image
     id: build
     if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
@@ -202,6 +221,10 @@ runs:
         ### Composer Update
 
         ${{ steps.run-lock-diff.outputs.stdout }}
+
+        #### Potential Issues
+
+        ${{ steps.issues.outputs.drupal_issues }}
 
         #### Software Versions `${{ steps.versions.outcome }}`
 
