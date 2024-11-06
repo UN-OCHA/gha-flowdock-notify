@@ -128,18 +128,18 @@ runs:
       run: composer install --no-scripts
     continue-on-error: true
 
-  - name: Composer Outdated
-    id: outdated
-    uses: cafuego/command-output@main
-    with:
-      run: composer outdated --direct --no-scripts
-    continue-on-error: false
-
   - name: Composer Update
     id: update
     uses: cafuego/command-output@main
     with:
       run: composer update --with-all-dependencies ${{ inputs.patch_packages }} --no-scripts
+    continue-on-error: false
+
+  - name: Composer Outdated
+    id: outdated
+    uses: cafuego/command-output@main
+    with:
+      run: composer outdated --direct --no-scripts
     continue-on-error: false
 
   - name: Check Drupal Issues
