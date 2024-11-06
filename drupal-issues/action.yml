@@ -1,0 +1,18 @@
+name: 'Drupal Issues'
+description: 'Runs `drupal-issues` to check if any issues are mention in code comments.'
+author: 'cafuego'
+branding:
+  icon: 'arrow-up-right'
+  color: 'blue'
+inputs:
+  source_directory:
+    description: 'A source directory or comma delimited list of source directories (relative to the repository root) under which to look for code.'
+    required: true
+  output_format:
+    description: 'A string that conjtrols the content of the markdown output. `table` creates a table, anything else a list.'
+    required: false
+outputs:
+  drupal_issues:
+    description: 'A chunk of markup content that lists any drupal core or contrib issues, links to them, and their status.'
+runs:
+  uses: 'docker://unocha/actions:drupal-issues-main'
