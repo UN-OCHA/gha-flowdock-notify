@@ -145,7 +145,7 @@ runs:
   - name: Check Drupal Issues
     id: issues
     if: contains(${{ inputs.patch_packages }}, 'drupal')
-    uses: docker://ghcr.io/un-ocha/actions:drupal-issues-dev
+    uses: docker://ghcr.io/un-ocha/actions:drupal-issues-main
     with:
       source_directory: ${{ inputs.source_directory }}
       output_format: ${{ inputs.output_format }}
