@@ -84,7 +84,7 @@ async function run() {
   // Assemble a list of node IDs for the API call.
   let nids = Object.keys(issues);
 
-  if (nids != null) {
+  if (nids.length > 0) {
     var response;
     // Fetch all issue data.
     try {
