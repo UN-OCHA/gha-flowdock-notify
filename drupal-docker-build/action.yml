@@ -120,6 +120,18 @@ runs:
       echo "BUILD_DATE=${BUILD_DATE}" >> $GITHUB_OUTPUT
     shell: bash
 
+  - name: Cache Composer Packages
+    uses: actions/cache@v3
+    env:
+      cache-name: cache-composer-packages
+    with:
+      path: ~/.composer/cache/files
+      key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('composer.lock') }}
+      restore-keys: |
+        ${{ runner.os }}-build-${{ env.cache-name }}-
+        ${{ runner.os }}-build-
+        ${{ runner.os }}-
+
   - name: Build docker image
     id: build
     uses: docker/build-push-action@v5
