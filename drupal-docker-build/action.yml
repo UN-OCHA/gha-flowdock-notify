@@ -125,8 +125,8 @@ runs:
     env:
       cache-name: cache-composer-packages
     with:
-      path: ~/.composer/cache/files
-      key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('composer.lock') }}
+      path: /home/runner/.cache/composer/files
+      key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
       restore-keys: |
         ${{ runner.os }}-build-${{ env.cache-name }}-
         ${{ runner.os }}-build-
