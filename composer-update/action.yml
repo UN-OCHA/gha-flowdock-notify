@@ -125,14 +125,14 @@ runs:
     id: install
     uses: cafuego/command-output@main
     with:
-      run: composer install --no-scripts
+      run: composer install --no-interaction --prefer-dist --no-scripts
     continue-on-error: true
 
   - name: Composer Update
     id: update
     uses: cafuego/command-output@main
     with:
-      run: composer update --with-all-dependencies ${{ inputs.patch_packages }} --no-scripts
+      run: composer update --with-all-dependencies ${{ inputs.patch_packages }} --no-interaction --prefer-dist --no-scripts
     continue-on-error: false
 
   - name: Composer Outdated
