@@ -27,7 +27,7 @@ inputs:
   patch_packages:
     description: "The package(s) to check for updates."
     required: false
-    default: "drupal/* unocha/* drush/*"
+    default: "drupal/* unocha/* drush/* weitzman/drupal-test-traits"
     type: string
   patch_config:
     description: "A flag that specifies whether to run updates and generate updated Drupal config."
