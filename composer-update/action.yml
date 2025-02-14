@@ -151,52 +151,6 @@ runs:
       output_format: ${{ inputs.output_format }}
     continue-on-error: true
 
-  - name: Build Image
-    id: build
-    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
-    uses: cafuego/command-output@main
-    with:
-      run: |
-        make
-    env:
-      fail-fast: true
-
-  - name: Setup Environment
-    id: setup-environment
-    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
-    uses: cafuego/command-output@main
-    with:
-      run: |
-        docker compose -f tests/docker-compose.yml up -d
-        sleep 10
-        docker ps -a
-        docker compose -f tests/docker-compose.yml exec -w /srv/www -T drupal composer install
-    env:
-      fail-fast: true
-
-  - name: Install Environment
-    id: install-environment
-    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
-    uses: cafuego/command-output@main
-    with:
-      run: |
-        docker compose -f tests/docker-compose.yml exec -T drupal drush -y si minimal --existing-config --verbose
-    env:
-      fail-fast: true
-
-  - name: Run updates and export config
-    id: export-config
-    if: inputs.patch_config == 'true' && contains(inputs.patch_packages, 'drupal')
-    uses: cafuego/command-output@main
-    with:
-      run: |
-        docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:import --source /srv/www/config
-        docker compose -f tests/docker-compose.yml exec -T drupal drush -y updatedb
-        docker compose -f tests/docker-compose.yml exec -T drupal drush cache:rebuild
-        docker compose -f tests/docker-compose.yml exec -T drupal drush -y config:export --destination /srv/www/config
-    env:
-      fail-fast: true
-
   - name: Install lock-diff
     id: install-lock-diff
     shell: bash
